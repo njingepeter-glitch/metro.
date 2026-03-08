@@ -199,9 +199,7 @@ const ListingCardComponent = ({
                     <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                       {['HOTEL', 'ACCOMMODATION'].includes(type) ? 'Per Night' : 'From'}
                     </span>
-                    <span className={cn("text-sm font-bold text-foreground", isUnavailable && "text-muted-foreground line-through")}>
-                        KSh {price.toLocaleString()} / ${Math.round(price / 130).toLocaleString()}
-                    </span>
+                        <PriceText price={price} isUnavailable={isUnavailable} />
                   </>
                 )}
             </div>
