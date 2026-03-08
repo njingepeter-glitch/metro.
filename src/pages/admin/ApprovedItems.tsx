@@ -187,7 +187,7 @@ const ApprovedItems = () => {
 
       {/* Bold Header Section */}
       <div className="bg-white border-b border-slate-100 pt-10 pb-20 px-4">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="container mx-auto px-4 space-y-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate(-1)}
