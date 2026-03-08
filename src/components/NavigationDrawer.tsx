@@ -153,6 +153,10 @@ export const NavigationDrawer = ({ onClose }: NavigationDrawerProps) => {
           <NavItem icon={Info} label={t('drawer.about')} path="/about" />
           <NavItem icon={FileText} label={t('drawer.terms')} path="/terms-of-service" />
           <NavItem icon={Shield} label={t('drawer.privacy')} path="/privacy-policy" />
+          
+          <div className="h-4" />
+          <p className="px-4 text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">Appearance</p>
+          <li><ThemeToggle variant="nav" /></li>
         </ul>
       </nav>
       
