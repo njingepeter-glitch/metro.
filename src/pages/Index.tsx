@@ -445,18 +445,18 @@ const Index = () => {
                 showBackButton={false}
               />
               {/* Category pills - arranged in rows */}
-              <div className="grid grid-cols-5 gap-2 mt-4 w-full max-w-md mx-auto">
+              <div className="grid grid-cols-5 gap-1.5 mt-4 w-full max-w-lg mx-auto px-2">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat.title}
                     onClick={() => navigate(cat.path)}
-                    className="flex flex-col items-center gap-1.5 py-3 px-1 rounded-2xl border border-white/20 transition-all hover:scale-105 active:scale-95 shadow-lg backdrop-blur-sm"
-                    style={{ backgroundColor: `${cat.color}CC` }}
+                    className="flex flex-col items-center gap-1 py-2.5 px-0.5 rounded-2xl border border-white/20 transition-all hover:scale-105 active:scale-95 shadow-lg backdrop-blur-sm min-w-0"
+                    style={{ backgroundColor: cat.color }}
                   >
-                    <div className="h-9 w-9 rounded-xl bg-white/20 flex items-center justify-center">
-                      <cat.icon className="h-5 w-5 text-white" />
+                    <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center">
+                      <cat.icon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-[10px] font-extrabold text-white tracking-wide">{cat.title}</span>
+                    <span className="text-[8px] font-extrabold text-white leading-tight truncate w-full text-center px-0.5">{cat.title}</span>
                   </button>
                 ))}
               </div>
