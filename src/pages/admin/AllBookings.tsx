@@ -16,6 +16,7 @@ import {
   MapPin, CheckCircle2, ShieldCheck
 } from "lucide-react";
 import { BookingDownloadButton } from "@/components/booking/BookingDownloadButton";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const COLORS = {
   TEAL: "#008080",
