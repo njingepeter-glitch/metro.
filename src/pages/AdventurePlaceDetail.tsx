@@ -362,7 +362,7 @@ const AdventurePlaceDetail = () => {
                   {place.entry_fee && place.entry_fee > 0 ? (
                     <div className="space-y-1">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-red-600">KSh {Number(place.entry_fee).toLocaleString()}</span>
+                        <span className="text-lg font-bold text-destructive">KSh {Number(place.entry_fee).toLocaleString()}</span>
                         <span className="text-[10px] font-bold text-slate-400 uppercase">/ adult</span>
                       </div>
                       {place.child_entry_fee !== undefined && (
@@ -416,7 +416,7 @@ const AdventurePlaceDetail = () => {
                 <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from/Entrtace Fee</p>
                 {place.entry_fee && place.entry_fee > 0 ? (
                   <div className="space-y-1">
-                    <h3 className="text-4xl font-black text-red-600">KSh {Number(place.entry_fee).toLocaleString()}</h3>
+                    <h3 className="text-xl font-bold text-destructive">KSh {Number(place.entry_fee).toLocaleString()}</h3>
                     <p className="text-[10px] font-bold text-slate-400 uppercase">per adult</p>
                     {place.child_entry_fee !== undefined && (
                       <p className="text-sm font-bold text-slate-500">Child: KSh {Number(place.child_entry_fee || 0).toLocaleString()}</p>

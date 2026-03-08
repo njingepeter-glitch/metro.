@@ -425,7 +425,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
 
           {/* Content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center pb-28 md:pb-20 px-4">
+          <div className="absolute inset-0 flex flex-col items-center justify-center pt-16 md:pt-16 pb-28 md:pb-20 px-4">
             <div className="container max-w-2xl">
               <p className="text-primary-foreground/70 text-xs md:text-sm font-semibold uppercase tracking-widest text-center mb-2">
                 Discover • Book • Experience
