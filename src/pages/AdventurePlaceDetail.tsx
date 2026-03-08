@@ -368,7 +368,7 @@ const AdventurePlaceDetail = () => {
                         <span className="text-[10px] font-bold text-slate-400 uppercase">/ adult</span>
                       </div>
                       {place.child_entry_fee !== undefined && (
-                        <div className="text-sm font-bold text-slate-500">Child: KSh {Number(place.child_entry_fee || 0).toLocaleString()}</div>
+                        <div className="text-sm font-bold text-slate-500">Child: {formatPrice(Number(place.child_entry_fee || 0))}</div>
                       )}
                     </div>
                   ) : (
