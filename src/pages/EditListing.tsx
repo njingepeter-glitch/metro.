@@ -1208,7 +1208,7 @@ const EditListing = () => {
                         {booking.payment_status}
                       </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground">KSh {booking.total_amount}</p>
+                    <p className="text-xs text-muted-foreground">{formatPrice(booking.total_amount)}</p>
                   </div>
                 ))}
                 <Button 
