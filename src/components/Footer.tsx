@@ -95,6 +95,24 @@ const CurrencyConverter = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState("");
 
+  // Auto-detect user's country and set local currency as target
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        const countryCode = data.country_code;
+        const localCurrency = COUNTRY_CURRENCY_MAP[countryCode];
+        if (localCurrency && localCurrency !== "USD") {
+          setTargetCurrency(localCurrency);
+        }
+      } catch {
+        // fallback to KES
+      }
+    };
+    detectCountry();
+  }, []);
+
   const fetchRates = async () => {
     setLoading(true);
     try {
