@@ -128,7 +128,7 @@ const Saved = () => {
       <div className={
         isEmbeddedInSheet
           ? "px-4 py-4"
-          : "max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 px-6 py-12"
+          : "container mx-auto px-4 py-12"
       }>
         {!isEmbeddedInSheet && (
           <aside className="lg:col-span-4">
