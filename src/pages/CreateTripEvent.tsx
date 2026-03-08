@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CountrySelector } from "@/components/creation/CountrySelector";
 import { PhoneInput } from "@/components/creation/PhoneInput";
 import { approvalStatusSchema } from "@/lib/validation";
+import { ReviewStep } from "@/components/creation/ReviewStep";
 import { compressImages } from "@/lib/imageCompression";
 import { OperatingHoursSection } from "@/components/creation/OperatingHoursSection";
 

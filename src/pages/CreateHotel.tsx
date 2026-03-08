@@ -22,6 +22,7 @@ import { CountrySelector } from "@/components/creation/CountrySelector";
 import { PhoneInput } from "@/components/creation/PhoneInput";
 import { compressImages } from "@/lib/imageCompression";
 import { OperatingHoursSection } from "@/components/creation/OperatingHoursSection";
+import { ReviewStep } from "@/components/creation/ReviewStep";
 import { GeneralFacilitiesSelector } from "@/components/creation/GeneralFacilitiesSelector";
 import { cn } from "@/lib/utils";
 
