@@ -592,8 +592,8 @@ const CreateAdventure = () => {
 
     if (!formData.registrationName.trim() || !formData.registrationNumber.trim() ||
         !formData.country || !formData.locationName.trim() || !formData.place.trim() ||
-        !formData.latitude || !formData.description.trim() || galleryImages.length === 0) {
-      toast({ title: "Action Required", description: "Please fill in all mandatory fields.", variant: "destructive" });
+        !formData.latitude || !formData.description.trim() || galleryImages.length < 5) {
+      toast({ title: "Action Required", description: galleryImages.length < 5 ? "Please upload at least 5 gallery photos." : "Please fill in all mandatory fields.", variant: "destructive" });
       return;
     }
 

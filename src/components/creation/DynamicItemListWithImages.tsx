@@ -105,9 +105,10 @@ export const DynamicItemListWithImages = ({
 
   const isItemValid = () => {
     if (!newItem.name.trim()) return false;
-    // Name is required; if showCapacity, capacity must be filled; if paid, price must be filled
     if (showCapacity && (!newItem.capacity || parseInt(newItem.capacity) <= 0)) return false;
     if (showPrice && newItem.priceType === "paid" && (!newItem.price || parseFloat(newItem.price) <= 0)) return false;
+    const imageCount = (newItem.images?.length || 0) + (newItem.tempImages?.length || 0);
+    if (imageCount < 5) return false;
     return true;
   };
 
@@ -314,7 +315,9 @@ export const DynamicItemListWithImages = ({
                     </label>
                   )}
                 </div>
-                <p className="text-[10px] text-muted-foreground">{imageCount}/{maxImages} photos</p>
+                <p className={`text-[10px] ${imageCount < 5 ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>
+                  {imageCount}/{maxImages} photos {imageCount < 5 ? `(need ${5 - imageCount} more)` : ''}
+                </p>
               </div>
             );
           })}
@@ -387,7 +390,7 @@ export const DynamicItemListWithImages = ({
 
         <div className="space-y-2">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            Photos (max {maxImages})
+            Photos (min 5, max {maxImages})
           </Label>
           <div className="flex flex-wrap gap-2">
             {newItem.tempImages?.map((file, idx) => (

@@ -602,7 +602,7 @@ const CreateHotel = () => {
     if (!formData.openingHours) e.openingHours = true;
     if (!formData.closingHours) e.closingHours = true;
     if (!Object.values(workingDays).some((v) => v)) e.workingDays = true;
-    if (galleryImages.length === 0) e.galleryImages = true;
+    if (galleryImages.length < 5) e.galleryImages = true;
     if (!formData.description.trim()) e.description = true;
     if (isAccommodationOnly && !formData.generalBookingLink.trim()) e.generalBookingLink = true;
 
@@ -907,7 +907,7 @@ const CreateHotel = () => {
         <Card className={cn("bg-white rounded-[28px] p-8 shadow-sm border-none", errors.galleryImages && "ring-2 ring-red-500")}
           data-error={errors.galleryImages ? "true" : undefined}>
           <h2 className="text-xl font-black uppercase tracking-tight mb-6 flex items-center gap-2" style={{ color: COLORS.TEAL }}>
-            <Camera className="h-5 w-5" /> Property Photos *
+            <Camera className="h-5 w-5" /> Property Photos * <span className="text-sm font-bold text-muted-foreground">(min 5)</span> {galleryImages.length < 5 && <span className="text-sm text-destructive">— need {5 - galleryImages.length} more</span>}
           </h2>
           <div className="space-y-6">
             <div className={cn("p-6 rounded-[24px] border-2 border-dashed transition-colors",

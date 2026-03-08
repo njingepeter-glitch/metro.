@@ -122,6 +122,7 @@ const CreateTripEvent = () => {
     if (!formData.available_tickets || parseInt(formData.available_tickets) <= 0) errors.push("available_tickets");
     if (!formData.phone_number) errors.push("phone_number");
     if (!formData.description.trim()) errors.push("description");
+    if (galleryImages.length < 5) errors.push("gallery");
 
     setValidationErrors(errors);
     if (errors.length > 0) {
@@ -325,7 +326,7 @@ const CreateTripEvent = () => {
             </div>
             {/* Gallery */}
             <div className="pt-6 border-t border-slate-100">
-              <h3 className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: COLORS.TEAL }}>Gallery (Max 5)</h3>
+              <h3 className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: COLORS.TEAL }}>Gallery (Min 5, Max 5) {galleryImages.length < 5 && <span className="text-destructive ml-1">— need {5 - galleryImages.length} more</span>}</h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {galleryImages.map((file, index) => (
                   <div key={index} className="relative aspect-square rounded-[20px] overflow-hidden border-2 border-slate-100">
