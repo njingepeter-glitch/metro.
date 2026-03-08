@@ -643,9 +643,9 @@ const Index = () => {
                   <Navigation className="h-8 w-8 text-primary" />
                 </div>
               </div>
-              <AlertDialogTitle className="text-center">Turn On Location</AlertDialogTitle>
+              <AlertDialogTitle className="text-center">{t('location.turnOn')}</AlertDialogTitle>
               <AlertDialogDescription className="text-center">
-                Enable location access to see places near you and get the best local experiences.
+                {t('location.description')}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
