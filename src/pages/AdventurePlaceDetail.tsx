@@ -362,7 +362,7 @@ const AdventurePlaceDetail = () => {
                   {place.entry_fee && place.entry_fee > 0 ? (
                     <div className="space-y-1">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-red-600">KSh {Number(place.entry_fee).toLocaleString()}</span>
+                        <span className="text-lg font-bold text-destructive">KSh {Number(place.entry_fee).toLocaleString()}</span>
                         <span className="text-[10px] font-bold text-slate-400 uppercase">/ adult</span>
                       </div>
                       {place.child_entry_fee !== undefined && (
