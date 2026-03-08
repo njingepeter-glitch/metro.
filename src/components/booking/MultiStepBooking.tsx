@@ -376,7 +376,7 @@ import { useSearchParams } from "react-router-dom";
                   <div>
                     <p className="font-medium">{facility.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      KES {facility.price.toLocaleString()} per night
+                      {formatPrice(facility.price)} per night
                     </p>
                   </div>
                   <div
