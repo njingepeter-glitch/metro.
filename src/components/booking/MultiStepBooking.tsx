@@ -427,7 +427,7 @@ import { useSearchParams } from "react-router-dom";
                     {selected?.startDate && selected?.endDate && (
                       <div className="col-span-2 text-sm font-medium" style={{ color: primaryColor }}>
                         {Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24)))} nights - 
-                        KES {(facility.price * Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24)))).toLocaleString()}
+                        {formatPrice(facility.price * Math.max(1, Math.ceil((new Date(selected.endDate).getTime() - new Date(selected.startDate).getTime()) / (1000 * 60 * 60 * 24))))}
                       </div>
                     )}
                   </div>
