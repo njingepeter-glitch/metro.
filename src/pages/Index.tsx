@@ -3,6 +3,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { useNavigate, Link } from "react-router-dom";
 // Header and MobileBottomBar are rendered in PageLayout
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
+import { useSearchFocus } from "@/components/PageLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Card } from "@/components/ui/card";
 import { Calendar, Hotel, Tent, Compass, Map, Grid, MapPin, ChevronLeft, ChevronRight, Loader2, Navigation, Home } from "lucide-react";
