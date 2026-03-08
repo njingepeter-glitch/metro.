@@ -56,21 +56,6 @@ const PinterestIcon = () => (
   </svg>
 );
 
-const CURRENCIES = [
-  { code: "USD", symbol: "$", name: "US Dollar" },
-  { code: "EUR", symbol: "€", name: "Euro" },
-  { code: "GBP", symbol: "£", name: "British Pound" },
-  { code: "KES", symbol: "KSh", name: "Kenyan Shilling" },
-  { code: "TZS", symbol: "TSh", name: "Tanzanian Shilling" },
-  { code: "UGX", symbol: "USh", name: "Ugandan Shilling" },
-  { code: "ZAR", symbol: "R", name: "South African Rand" },
-  { code: "AED", symbol: "د.إ", name: "UAE Dirham" },
-  { code: "SAR", symbol: "﷼", name: "Saudi Riyal" },
-  { code: "NGN", symbol: "₦", name: "Nigerian Naira" },
-  { code: "INR", symbol: "₹", name: "Indian Rupee" },
-  { code: "EGP", symbol: "E£", name: "Egyptian Pound" },
-];
-
 const LANGUAGES = [
   { code: "en", name: "English" },
   { code: "fr", name: "Français" },
