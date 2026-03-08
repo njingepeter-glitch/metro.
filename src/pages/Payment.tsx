@@ -16,6 +16,7 @@ import { generateReferralLink } from "@/lib/referralUtils";
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function Payment() {
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
