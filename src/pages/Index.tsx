@@ -442,13 +442,8 @@ const Index = () => {
                 onBack={() => { setIsSearchFocused(false); setSearchQuery(""); fetchAllData(); }}
                 showBackButton={false}
               />
-            </div>
-          </div>
-
-          {/* Category pills at bottom */}
-          <div className="absolute bottom-0 left-0 right-0">
-            <div className="px-3 pt-6 pb-4" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%)' }}>
-              <div className="flex justify-center gap-2 md:gap-3 flex-wrap">
+              {/* Category pills */}
+              <div className="flex justify-center gap-2 md:gap-3 flex-wrap mt-4">
                 {CATEGORIES.map((cat) => (
                   <button
                     key={cat.title}
