@@ -14,7 +14,6 @@ i18n
   .init({
     resources: {
       en: { translation: en },
-      sw: { translation: sw },
       fr: { translation: fr },
       es: { translation: es },
       ar: { translation: ar },

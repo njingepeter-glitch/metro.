@@ -73,7 +73,6 @@ const CURRENCIES = [
 
 const LANGUAGES = [
   { code: "en", name: "English" },
-  { code: "sw", name: "Kiswahili" },
   { code: "fr", name: "Français" },
   { code: "es", name: "Español" },
   { code: "ar", name: "العربية" },
