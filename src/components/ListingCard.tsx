@@ -82,6 +82,7 @@ const ListingCardComponent = ({
   const isUnavailable = useMemo(() => isOutdated || isSoldOut, [isOutdated, isSoldOut]);
 
   const optimizedImageUrl = useMemo(() => optimizeSupabaseImage(imageUrl, { width: 600, height: 450, quality: 85 }), [imageUrl]);
+
   const displayType = useMemo(() => {
     if (isEventOrSport) return "Event & Sports";
     if (type === "ADVENTURE PLACE") return "Attraction";
@@ -146,7 +147,7 @@ const ListingCardComponent = ({
         isUnavailable && "opacity-80"
       )}
     >
-      {/* Image */}
+      {/* ── Image ── */}
       <div
         ref={imageContainerRef}
         className="relative w-[100px] sm:w-[120px] md:w-full flex-shrink-0 overflow-hidden min-h-[120px] md:min-h-[180px] md:aspect-[16/9]"
@@ -168,12 +169,12 @@ const ListingCardComponent = ({
           />
         )}
 
-        {/* ── Category badge: over image top-left, only on md+ (col layout) ── */}
-        <div className="absolute left-2 top-2 z-20 hidden md:flex">
+        {/* Category badge — on image, top-left, md+ only */}
+        <div className="hidden md:flex absolute top-2 left-2 z-20">
           {categoryBadge}
         </div>
 
-        {/* Heart */}
+        {/* Heart button */}
         {onSave && (
           <button
             onClick={handleSaveClick}
@@ -186,7 +187,7 @@ const ListingCardComponent = ({
           </button>
         )}
 
-        {/* Sold out overlay */}
+        {/* Sold out / unavailable overlay */}
         {isUnavailable && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
             <span className="rounded-md border border-white/60 px-3 py-0.5 text-[10px] font-black uppercase text-white">
@@ -196,11 +197,13 @@ const ListingCardComponent = ({
         )}
       </div>
 
-      {/* Content */}
+      {/* ── Content ── */}
       <div className="flex flex-1 flex-col justify-between p-3 sm:p-4 min-w-0 gap-1.5">
-        {/* Top row: category badge (mobile row layout only) + urgency */}
+
+        {/* Top row: category (mobile only) + urgency badge */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* ── Category badge: inside content only on mobile (row layout) ── */}
+          {/* On mobile (flex-row card) the badge lives here inline */}
+          {/* On md+ it's absolutely positioned over the image above, so hidden here */}
           <div className="md:hidden">
             {categoryBadge}
           </div>
@@ -216,7 +219,7 @@ const ListingCardComponent = ({
           {formattedName}
         </h3>
 
-        {/* Subtitle: activities only */}
+        {/* Subtitle: activities */}
         {subtitle && (
           <p className="line-clamp-1 text-[11px] text-muted-foreground">
             {subtitle}
@@ -253,7 +256,7 @@ const ListingCardComponent = ({
               </div>
             )}
 
-            {/* Slots */}
+            {/* Remaining slots */}
             {tracksAvailability && availableTickets > 0 && !isUnavailable && !fewSlotsRemaining && (
               <span className="text-[9px] font-semibold text-primary flex-shrink-0">
                 <Ticket className="inline h-2.5 w-2.5 mr-0.5" />{remainingTickets}
