@@ -27,7 +27,7 @@ import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 interface ScrollSectionProps {
   title: string;
   viewAllPath: string;
-  accentClass: string;
+  accentColor: string;
   children: React.ReactNode;
   scrollRef: React.RefObject<HTMLDivElement>;
   onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
@@ -35,7 +35,7 @@ interface ScrollSectionProps {
   loading: boolean;
 }
 
-const ScrollSection = memo(({ title, viewAllPath, accentClass, children, scrollRef, onScroll, hasItems, loading }: ScrollSectionProps) => {
+const ScrollSection = memo(({ title, viewAllPath, accentColor, children, scrollRef, onScroll, hasItems, loading }: ScrollSectionProps) => {
   const scroll = useCallback((dir: 'left' | 'right') => {
     scrollRef.current?.scrollTo({
       left: scrollRef.current.scrollLeft + (dir === 'left' ? -320 : 320),
@@ -45,13 +45,14 @@ const ScrollSection = memo(({ title, viewAllPath, accentClass, children, scrollR
 
   return (
     <section className="mb-4 md:mb-8">
-      <div className="flex items-center justify-between mb-3 md:mb-4">
-        <h2 className={`text-base sm:text-xl md:text-2xl font-extrabold tracking-tight ${accentClass}`}>
+      <div className="flex items-center justify-between mb-3 md:mb-4 rounded-lg px-3 py-2" style={{ backgroundColor: `${accentColor}10` }}>
+        <h2 className="text-base sm:text-xl md:text-2xl font-extrabold tracking-tight" style={{ color: accentColor }}>
           {title}
         </h2>
         <Link
           to={viewAllPath}
-          className="text-xs md:text-sm font-semibold text-primary hover:text-primary/80 transition-colors shrink-0"
+          className="text-xs md:text-sm font-semibold transition-colors shrink-0"
+          style={{ color: accentColor }}
         >
           View All →
         </Link>
@@ -566,7 +567,7 @@ const Index = () => {
             {/* Adventures */}
             <ScrollSection
               title={t('sections.placesToAdventure')} viewAllPath="/category/campsite"
-              accentClass="text-primary" scrollRef={featuredCampsitesRef}
+              accentColor="hsl(142, 70%, 35%)" scrollRef={featuredCampsitesRef}
               onScroll={handleScroll('featuredCampsites')}
               hasItems={displayCampsites.length > 0} loading={loadingScrollable}
             >
@@ -576,7 +577,7 @@ const Index = () => {
             {/* Hotels */}
             <ScrollSection
               title={t('sections.hotelsAccommodations')} viewAllPath="/category/hotels"
-              accentClass="text-[hsl(180,100%,25%)]" scrollRef={featuredHotelsRef}
+              accentColor="hsl(220, 70%, 50%)" scrollRef={featuredHotelsRef}
               onScroll={handleScroll('featuredHotels')}
               hasItems={displayHotels.length > 0} loading={loadingScrollable}
             >
@@ -586,7 +587,7 @@ const Index = () => {
             {/* Trips */}
             <ScrollSection
               title={t('sections.tripsAndTours')} viewAllPath="/category/trips"
-              accentClass="text-destructive" scrollRef={featuredTripsRef}
+              accentColor="hsl(25, 90%, 50%)" scrollRef={featuredTripsRef}
               onScroll={handleScroll('featuredTrips')}
               hasItems={displayTrips.length > 0} loading={loadingScrollable}
             >
@@ -596,7 +597,7 @@ const Index = () => {
             {/* Events */}
             <ScrollSection
               title={t('sections.sportsAndEvents')} viewAllPath="/category/events"
-              accentClass="text-[hsl(16,100%,66%)]" scrollRef={featuredEventsRef}
+              accentColor="hsl(340, 75%, 50%)" scrollRef={featuredEventsRef}
               onScroll={handleScroll('featuredEvents')}
               hasItems={displayEvents.length > 0} loading={loadingScrollable}
             >
