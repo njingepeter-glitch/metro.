@@ -183,10 +183,10 @@ const ListingCardComponent = ({
         <div className="flex items-center gap-2 flex-wrap">
           <span
             className={cn(
-              "text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border",
-              !categoryColor && "text-primary bg-primary/10 border-primary/20"
+              "text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md",
+              !categoryColor && "text-primary-foreground bg-primary"
             )}
-            style={categoryColor ? { color: categoryColor, backgroundColor: `${categoryColor}15`, borderColor: `${categoryColor}30` } : undefined}
+            style={categoryColor ? { color: '#fff', backgroundColor: categoryColor } : undefined}
           >
             {displayType}
           </span>
