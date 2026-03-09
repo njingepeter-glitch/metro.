@@ -12,9 +12,12 @@ const PriceText = ({ price, isUnavailable, type }: { price: number; isUnavailabl
   const { formatPrice } = useCurrency();
   const label = ['HOTEL', 'ACCOMMODATION'].includes(type) ? '/night' : '/person';
   return (
-    <div className={cn("flex flex-col items-end", isUnavailable && "text-muted-foreground line-through")}>
-      <span className="text-sm sm:text-base font-bold text-foreground whitespace-nowrap">{formatPrice(price)}</span>
-      <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium">{label}</span>
+    <div className={cn(
+      "flex items-center gap-1 rounded-md px-2.5 py-1 bg-destructive/10",
+      isUnavailable && "opacity-50 line-through"
+    )}>
+      <span className="text-sm font-bold text-destructive whitespace-nowrap">{formatPrice(price)}</span>
+      <span className="text-[9px] text-destructive/70 font-medium">{label}</span>
     </div>
   );
 };
