@@ -20,83 +20,12 @@ import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { trackReferralClick, generateReferralLink } from "@/lib/referralUtils";
 import { DetailNavBar } from "@/components/detail/DetailNavBar";
 import { ImageGalleryModal } from "@/components/detail/ImageGalleryModal";
+import { QuickNavigationBar } from "@/components/detail/QuickNavigationBar";
 import { GeneralFacilitiesDisplay } from "@/components/detail/GeneralFacilitiesDisplay";
 import { DetailMapSection } from "@/components/detail/DetailMapSection";
 import { TealLoader } from "@/components/ui/teal-loader";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { Footer } from "@/components/Footer";
-
-// ─── Inline Quick Navigation Bar (replaces imported QuickNavigationBar) ───────
-const QuickNavigationBar = ({
-  hasFacilities,
-  hasActivities,
-  hasContact,
-}: {
-  hasFacilities: boolean;
-  hasActivities: boolean;
-  hasContact: boolean;
-}) => {
-  const navItems = [
-    hasFacilities && {
-      label: "Facilities",
-      href: "#facilities-section",
-      icon: "🏊",
-      gradient: "from-teal-500 to-emerald-500",
-      shadow: "shadow-teal-200",
-      ring: "ring-teal-300",
-    },
-    hasActivities && {
-      label: "Activities",
-      href: "#activities-section",
-      icon: "🎯",
-      gradient: "from-orange-400 to-red-500",
-      shadow: "shadow-orange-200",
-      ring: "ring-orange-300",
-    },
-    hasContact && {
-      label: "Contact",
-      href: "#contact-section",
-      icon: "📞",
-      gradient: "from-violet-500 to-purple-600",
-      shadow: "shadow-violet-200",
-      ring: "ring-violet-300",
-    },
-  ].filter(Boolean) as {
-    label: string;
-    href: string;
-    icon: string;
-    gradient: string;
-    shadow: string;
-    ring: string;
-  }[];
-
-  if (navItems.length === 0) return null;
-
-  return (
-    <div className="flex gap-3 w-full mt-5 pt-5 border-t border-slate-100">
-      {navItems.map((item) => (
-        <a
-          key={item.label}
-          href={item.href}
-          className={`
-            flex-1 flex flex-col items-center justify-center gap-1.5 py-4
-            rounded-2xl bg-gradient-to-br ${item.gradient}
-            shadow-lg ${item.shadow}
-            ring-2 ring-offset-2 ${item.ring}
-            active:scale-95 transition-all duration-150
-            select-none
-          `}
-        >
-          <span className="text-2xl leading-none">{item.icon}</span>
-          <span className="text-[10px] font-black uppercase tracking-wider text-white drop-shadow-sm">
-            {item.label}
-          </span>
-        </a>
-      ))}
-    </div>
-  );
-};
-// ─────────────────────────────────────────────────────────────────────────────
 
 const AdventurePlaceDetail = () => {
   const { slug } = useParams();
@@ -191,12 +120,14 @@ const AdventurePlaceDetail = () => {
   const fetchPlace = async () => {
     if (!id) return;
     try {
+      // Step 1: exact match on id column (works for both UUID and legacy friendly IDs)
       let { data } = await supabase
         .from("adventure_places")
         .select("*")
         .eq("id", id)
         .maybeSingle() as { data: any };
 
+      // Step 2: fallback to slug column (new listings store friendly slug separately)
       if (!data) {
         const res = await supabase
           .from("adventure_places")
@@ -268,7 +199,6 @@ const AdventurePlaceDetail = () => {
       />
 
       <div className="max-w-6xl mx-auto md:px-4 md:pt-3">
-        {/* ── Mobile hero carousel ── */}
         <div className="relative w-full h-[45vh] bg-slate-900 overflow-hidden md:rounded-3xl md:hidden">
           <div className="absolute top-4 left-0 right-0 px-3 z-50 flex justify-between items-center">
             <Button onClick={goBack} className="rounded-full w-10 h-10 p-0 border-none bg-white/90 backdrop-blur-sm text-slate-900 hover:bg-white shadow-lg transition-all">
@@ -314,7 +244,6 @@ const AdventurePlaceDetail = () => {
           </div>
         </div>
 
-        {/* ── Desktop grid gallery ── */}
         <div className="hidden md:block relative">
           <div className="absolute top-6 left-6 right-6 z-50 flex justify-between items-center">
             <Button onClick={goBack} className="rounded-full w-12 h-12 p-0 border-none bg-white/90 backdrop-blur-sm text-slate-900 hover:bg-white shadow-lg transition-all">
@@ -375,31 +304,24 @@ const AdventurePlaceDetail = () => {
         </div>
       </div>
 
-      {/* ── NOTE: QuickNavigationBar removed from here — now lives inside About section below ── */}
+      <div className="md:hidden container px-4 mt-4 max-w-6xl mx-auto">
+        <QuickNavigationBar 
+          hasFacilities={place.facilities?.length > 0} 
+          hasActivities={place.activities?.length > 0}
+          hasContact={place.phone_numbers?.length > 0 || !!place.email}
+        />
+      </div>
 
       <main className="container px-4 mt-6 relative z-30 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[1.8fr,1fr] gap-4">
           <div className="space-y-4">
-
-            {/* ── About This Property — QuickNavigationBar now nested here for mobile ── */}
             <section className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
               <h2 className="text-[11px] font-black uppercase tracking-widest mb-3 text-slate-900">About This Property</h2>
               {place.description ? (
                 <p className="text-foreground text-sm leading-relaxed whitespace-pre-line">{place.description}</p>
               ) : (
-                <div className="flex items-center gap-2 text-slate-300 italic py-4">
-                  <AlertCircle className="h-4 w-4" /> Description coming soon
-                </div>
+                <div className="flex items-center gap-2 text-slate-300 italic py-4"><AlertCircle className="h-4 w-4" /> Description coming soon</div>
               )}
-
-              {/* ✅ Colorful Quick Navigation Bar — mobile only, below description */}
-              <div className="md:hidden">
-                <QuickNavigationBar
-                  hasFacilities={(place.facilities?.length ?? 0) > 0}
-                  hasActivities={(place.activities?.length ?? 0) > 0}
-                  hasContact={(place.phone_numbers?.length ?? 0) > 0 || !!place.email}
-                />
-              </div>
             </section>
 
             <div className="md:hidden"><OperatingHoursInfo /></div>
@@ -422,7 +344,6 @@ const AdventurePlaceDetail = () => {
               </div>
             )}
 
-            {/* ── Mobile booking card ── */}
             <div className="bg-white rounded-[32px] p-6 shadow-xl border border-slate-100 lg:hidden">
               <div className="flex justify-between items-start mb-6">
                 <div>
@@ -449,46 +370,14 @@ const AdventurePlaceDetail = () => {
                   <p className="text-[9px] font-black text-slate-400 uppercase">{liveRating.count} reviews</p>
                 </div>
               </div>
-              <Button
-                onClick={() => navigate(`/booking/adventure_place/${place.id}`)}
-                className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95"
-              >
-                Book Now
-              </Button>
+              <Button onClick={() => navigate(`/booking/adventure_place/${place.id}`)} className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95">Book Now</Button>
               <div className="grid grid-cols-3 gap-3 mt-4">
-                <UtilityButton
-                  icon={<Navigation className="h-5 w-5" />}
-                  label="Map"
-                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.location}`)}`, "_blank")}
-                />
-                <UtilityButton
-                  icon={<Copy className="h-5 w-5" />}
-                  label="Copy"
-                  onClick={async () => {
-                    toast({ title: "Copying link..." });
-                    const refLink = await generateReferralLink(id!, "adventure_place", id!);
-                    await navigator.clipboard.writeText(refLink);
-                    toast({ title: "Link Copied!" });
-                  }}
-                />
-                <UtilityButton
-                  icon={<Share2 className="h-5 w-5" />}
-                  label="Share"
-                  onClick={async () => {
-                    toast({ title: "Preparing share..." });
-                    const refLink = await generateReferralLink(id!, "adventure_place", id!);
-                    if (navigator.share) {
-                      try { await navigator.share({ title: place.name, url: refLink }); } catch (e) {}
-                    } else {
-                      await navigator.clipboard.writeText(refLink);
-                      toast({ title: "Link Copied!" });
-                    }
-                  }}
-                />
+                <UtilityButton icon={<Navigation className="h-5 w-5" />} label="Map" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.location}`)}`, "_blank")} />
+                <UtilityButton icon={<Copy className="h-5 w-5" />} label="Copy" onClick={async () => { toast({ title: "Copying link..." }); const refLink = await generateReferralLink(id!, "adventure_place", id!); await navigator.clipboard.writeText(refLink); toast({ title: "Link Copied!" }); }} />
+                <UtilityButton icon={<Share2 className="h-5 w-5" />} label="Share" onClick={async () => { toast({ title: "Preparing share..." }); const refLink = await generateReferralLink(id!, "adventure_place", id!); if (navigator.share) { try { await navigator.share({ title: place.name, url: refLink }); } catch (e) {} } else { await navigator.clipboard.writeText(refLink); toast({ title: "Link Copied!" }); } }} />
               </div>
             </div>
 
-            {/* ── Mobile contact ── */}
             <div id="contact-section" className="lg:hidden">
               {(place.phone_numbers?.length > 0 || place.email) && (
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-3">
@@ -510,11 +399,10 @@ const AdventurePlaceDetail = () => {
             </div>
           </div>
 
-          {/* ── Desktop sticky sidebar ── */}
           <div className="hidden lg:block">
             <div className="sticky top-24 bg-white rounded-[40px] p-8 shadow-2xl border border-slate-100 space-y-6">
               <div className="text-center">
-                <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from / Entrance Fee</p>
+                <p className="text-xs font-black uppercase text-slate-400 mb-1">Starting from/Entrtace Fee</p>
                 {place.entry_fee && place.entry_fee > 0 ? (
                   <div className="space-y-1">
                     <h3 className="text-xl font-bold text-destructive">{formatPrice(Number(place.entry_fee))}</h3>
@@ -534,43 +422,12 @@ const AdventurePlaceDetail = () => {
 
               <OperatingHoursInfo />
 
-              <Button
-                onClick={() => navigate(`/booking/adventure_place/${place.id}`)}
-                className="w-full py-7 rounded-3xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-xl transition-all active:scale-95"
-              >
-                Reserve Now
-              </Button>
+              <Button onClick={() => navigate(`/booking/adventure_place/${place.id}`)} className="w-full py-7 rounded-3xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-xl transition-all active:scale-95">Reserve Now</Button>
 
               <div className="grid grid-cols-3 gap-3">
-                <UtilityButton
-                  icon={<Navigation className="h-5 w-5" />}
-                  label="Map"
-                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.location}`)}`, "_blank")}
-                />
-                <UtilityButton
-                  icon={<Copy className="h-5 w-5" />}
-                  label="Copy"
-                  onClick={async () => {
-                    toast({ title: "Copying link..." });
-                    const refLink = await generateReferralLink(id!, "adventure_place", id!);
-                    await navigator.clipboard.writeText(refLink);
-                    toast({ title: "Link Copied!" });
-                  }}
-                />
-                <UtilityButton
-                  icon={<Share2 className="h-5 w-5" />}
-                  label="Share"
-                  onClick={async () => {
-                    toast({ title: "Preparing share..." });
-                    const refLink = await generateReferralLink(id!, "adventure_place", id!);
-                    if (navigator.share) {
-                      try { await navigator.share({ title: place.name, url: refLink }); } catch (e) {}
-                    } else {
-                      await navigator.clipboard.writeText(refLink);
-                      toast({ title: "Link Copied!" });
-                    }
-                  }}
-                />
+                <UtilityButton icon={<Navigation className="h-5 w-5" />} label="Map" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${place.name}, ${place.location}`)}`, "_blank")} />
+                <UtilityButton icon={<Copy className="h-5 w-5" />} label="Copy" onClick={async () => { toast({ title: "Copying link..." }); const refLink = await generateReferralLink(id!, "adventure_place", id!); await navigator.clipboard.writeText(refLink); toast({ title: "Link Copied!" }); }} />
+                <UtilityButton icon={<Share2 className="h-5 w-5" />} label="Share" onClick={async () => { toast({ title: "Preparing share..." }); const refLink = await generateReferralLink(id!, "adventure_place", id!); if (navigator.share) { try { await navigator.share({ title: place.name, url: refLink }); } catch (e) {} } else { await navigator.clipboard.writeText(refLink); toast({ title: "Link Copied!" }); } }} />
               </div>
 
               {(place.phone_numbers?.length > 0 || place.email) && (
@@ -599,16 +456,7 @@ const AdventurePlaceDetail = () => {
         </div>
 
         <DetailMapSection
-          currentItem={{
-            id: place.id,
-            name: place.name,
-            latitude: place.latitude,
-            longitude: place.longitude,
-            location: place.location,
-            country: place.country,
-            image_url: place.image_url,
-            entry_fee: place.entry_fee,
-          }}
+          currentItem={{ id: place.id, name: place.name, latitude: place.latitude, longitude: place.longitude, location: place.location, country: place.country, image_url: place.image_url, entry_fee: place.entry_fee }}
           itemType="adventure"
         />
 
@@ -619,12 +467,8 @@ const AdventurePlaceDetail = () => {
   );
 };
 
-const UtilityButton = ({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) => (
-  <Button
-    variant="ghost"
-    onClick={onClick}
-    className="flex-col h-auto py-4 bg-slate-50 text-slate-500 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors flex-1"
-  >
+const UtilityButton = ({ icon, label, onClick }: { icon: React.ReactNode, label: string, onClick: () => void }) => (
+  <Button variant="ghost" onClick={onClick} className="flex-col h-auto py-4 bg-slate-50 text-slate-500 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors flex-1">
     <div className="mb-1">{icon}</div>
     <span className="text-[10px] font-black uppercase tracking-tighter">{label}</span>
   </Button>
