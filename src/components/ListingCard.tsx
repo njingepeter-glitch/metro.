@@ -57,7 +57,7 @@ const ListingCardComponent = ({
   isOutdated = false, onSave, isSaved = false, activities,
   availableTickets = 0, bookedTickets = 0,
   priority = false, compact = false, avgRating, reviewCount, place,
-  isFlexibleDate = false, hidePrice = false, description
+  isFlexibleDate = false, hidePrice = false, description, categoryColor
 }: ListingCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
