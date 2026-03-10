@@ -119,21 +119,24 @@ const AdventurePlaceDetail = () => {
   const fetchPlace = async () => {
     if (!id) return;
     try {
-      // Step 1: match on id column
-      let { data } = await supabase
-        .from("adventure_places")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle() as { data: any };
+      let data: any = null;
+      const candidates = [...new Set([id, rawSlug])].filter(Boolean) as string[];
 
-      // Step 2: fallback to slug column
-      if (!data) {
-        const res = await supabase
+      for (const candidate of candidates) {
+        if (data) break;
+        const idRes = await supabase
           .from("adventure_places")
           .select("*")
-          .eq("slug", id)
+          .eq("id", candidate)
           .maybeSingle() as { data: any };
-        if (res.data) data = res.data;
+        if (idRes.data) { data = idRes.data; break; }
+
+        const slugRes = await supabase
+          .from("adventure_places")
+          .select("*")
+          .eq("slug", candidate)
+          .maybeSingle() as { data: any };
+        if (slugRes.data) { data = slugRes.data; break; }
       }
 
       if (!data) throw new Error("Not found");

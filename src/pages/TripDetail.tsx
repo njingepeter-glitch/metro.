@@ -87,23 +87,26 @@ const TripDetail = () => {
   const fetchTrip = async () => {
     if (!id) return;
     try {
-      // Step 1: exact match by id
-      let { data } = await supabase
-        .from("trips")
-        .select(SELECT_FIELDS)
-        .eq("id", id)
-        .eq("type", "trip")          // ← FIXED: was "event"
-        .maybeSingle() as { data: any };
+      let data: any = null;
+      const candidates = [...new Set([id, rawSlug])].filter(Boolean) as string[];
 
-      // Step 2: fallback to slug column
-      if (!data) {
-        const res = await supabase
+      for (const candidate of candidates) {
+        if (data) break;
+        const idRes = await supabase
           .from("trips")
           .select(SELECT_FIELDS)
-          .eq("slug", id)
-          .eq("type", "trip")        // ← FIXED: was "event"
+          .eq("id", candidate)
+          .eq("type", "trip")
           .maybeSingle() as { data: any };
-        if (res.data) data = res.data;
+        if (idRes.data) { data = idRes.data; break; }
+
+        const slugRes = await supabase
+          .from("trips")
+          .select(SELECT_FIELDS)
+          .eq("slug", candidate)
+          .eq("type", "trip")
+          .maybeSingle() as { data: any };
+        if (slugRes.data) { data = slugRes.data; break; }
       }
 
       if (!data) throw new Error("Not found");

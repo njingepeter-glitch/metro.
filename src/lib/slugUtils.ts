@@ -49,6 +49,7 @@ export const createDetailPath = (
 /**
  * Extracts ID from a slug-id combination or returns the ID directly
  * Prioritizes full UUID format for database queries
+ * Also handles short text IDs (e.g., "ss-fk-OHZC", "tt-TIQJ")
  */
 export const extractIdFromSlug = (slugWithId: string): string => {
   if (!slugWithId) return '';
@@ -58,6 +59,14 @@ export const extractIdFromSlug = (slugWithId: string): string => {
   const uuidMatch = slugWithId.match(uuidPattern);
   if (uuidMatch) {
     return uuidMatch[0];
+  }
+  
+  // For short IDs like "ss-fk-OHZC" embedded in slugs like "ss-fk-jd-ss-fk-OHZC",
+  // try to extract by finding a pattern with uppercase chars at the end (common for short IDs)
+  const shortIdPattern = /([a-z]+-[a-z]+-[A-Za-z0-9]+)$/;
+  const shortMatch = slugWithId.match(shortIdPattern);
+  if (shortMatch) {
+    return shortMatch[1];
   }
   
   // Return original string for backward compatibility with direct ID access

@@ -127,26 +127,26 @@ const HotelDetail = () => {
     try {
       let data: any = null;
 
-      // Step 1: Try slug column first (friendly slugs from CreateHotel always land here)
-      const slugRes = await supabase
-        .from("hotels")
-        .select("*")
-        .eq("slug", id)
-        .maybeSingle();
+      // Try all lookup strategies: id, slug column, and raw slug param
+      const candidates = [...new Set([id, rawSlug])].filter(Boolean) as string[];
+      
+      for (const candidate of candidates) {
+        if (data) break;
+        // Try slug column
+        const slugRes = await supabase
+          .from("hotels")
+          .select("*")
+          .eq("slug", candidate)
+          .maybeSingle();
+        if (slugRes.data) { data = slugRes.data; break; }
 
-      if (slugRes.data) {
-        data = slugRes.data;
-      }
-
-      // Step 2: Fallback — try id column (handles legacy UUID-based routes)
-      if (!data) {
+        // Try id column
         const idRes = await supabase
           .from("hotels")
           .select("*")
-          .eq("id", id)
+          .eq("id", candidate)
           .maybeSingle();
-
-        if (idRes.data) data = idRes.data;
+        if (idRes.data) { data = idRes.data; break; }
       }
 
       if (!data) {
