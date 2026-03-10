@@ -47,7 +47,7 @@ const fetchExchangeRate = async (): Promise<number> => {
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [currency, setCurrencyState] = useState<Currency>(() => {
-    return (localStorage.getItem(CACHE_KEY) as Currency) || "USD";
+    return (localStorage.getItem(CACHE_KEY) as Currency) || "KES";
   });
   const [rate, setRate] = useState(() => {
     const cached = localStorage.getItem(RATE_CACHE_KEY);
