@@ -525,5 +525,5 @@ const UtilityButton = ({ icon, label, onClick }: { icon: React.ReactNode; label:
     <span className="text-[10px] font-black uppercase tracking-tighter">{label}</span>
   </Button>
 );
-
+ 
 export default HotelDetail;
