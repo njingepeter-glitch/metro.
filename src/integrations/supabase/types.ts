@@ -411,7 +411,7 @@ export type Database = {
           facilities?: Json | null
           gallery_images?: string[] | null
           general_booking_link?: string | null
-          id?: string
+          id: string
           image_url: string
           images?: string[] | null
           is_hidden?: boolean | null
@@ -1187,7 +1187,7 @@ export type Database = {
           email?: string | null
           flexible_end_date?: string | null
           gallery_images?: string[] | null
-          id?: string
+          id: string
           image_url: string
           images?: string[] | null
           is_custom_date?: boolean | null
@@ -1405,168 +1405,6 @@ export type Database = {
           name?: string | null
           opening_hours?: string | null
           place?: string | null
-        }
-        Relationships: []
-      }
-      public_hotels: {
-        Row: {
-          activities: Json | null
-          amenities: string[] | null
-          approval_status: string | null
-          available_rooms: number | null
-          closing_hours: string | null
-          country: string | null
-          created_at: string | null
-          created_by: string | null
-          days_opened: string[] | null
-          description: string | null
-          facilities: Json | null
-          gallery_images: string[] | null
-          id: string | null
-          image_url: string | null
-          images: string[] | null
-          is_hidden: boolean | null
-          latitude: number | null
-          location: string | null
-          longitude: number | null
-          name: string | null
-          opening_hours: string | null
-          place: string | null
-        }
-        Insert: {
-          activities?: Json | null
-          amenities?: string[] | null
-          approval_status?: string | null
-          available_rooms?: number | null
-          closing_hours?: string | null
-          country?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          days_opened?: string[] | null
-          description?: string | null
-          facilities?: Json | null
-          gallery_images?: string[] | null
-          id?: string | null
-          image_url?: string | null
-          images?: string[] | null
-          is_hidden?: boolean | null
-          latitude?: number | null
-          location?: string | null
-          longitude?: number | null
-          name?: string | null
-          opening_hours?: string | null
-          place?: string | null
-        }
-        Update: {
-          activities?: Json | null
-          amenities?: string[] | null
-          approval_status?: string | null
-          available_rooms?: number | null
-          closing_hours?: string | null
-          country?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          days_opened?: string[] | null
-          description?: string | null
-          facilities?: Json | null
-          gallery_images?: string[] | null
-          id?: string | null
-          image_url?: string | null
-          images?: string[] | null
-          is_hidden?: boolean | null
-          latitude?: number | null
-          location?: string | null
-          longitude?: number | null
-          name?: string | null
-          opening_hours?: string | null
-          place?: string | null
-        }
-        Relationships: []
-      }
-      public_trips: {
-        Row: {
-          activities: Json | null
-          approval_status: string | null
-          available_tickets: number | null
-          closing_hours: string | null
-          country: string | null
-          created_at: string | null
-          created_by: string | null
-          date: string | null
-          days_opened: string[] | null
-          description: string | null
-          gallery_images: string[] | null
-          id: string | null
-          image_url: string | null
-          images: string[] | null
-          is_custom_date: boolean | null
-          is_flexible_date: boolean | null
-          is_hidden: boolean | null
-          location: string | null
-          map_link: string | null
-          name: string | null
-          opening_hours: string | null
-          place: string | null
-          price: number | null
-          price_child: number | null
-          slot_limit_type: string | null
-          type: string | null
-        }
-        Insert: {
-          activities?: Json | null
-          approval_status?: string | null
-          available_tickets?: number | null
-          closing_hours?: string | null
-          country?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          date?: string | null
-          days_opened?: string[] | null
-          description?: string | null
-          gallery_images?: string[] | null
-          id?: string | null
-          image_url?: string | null
-          images?: string[] | null
-          is_custom_date?: boolean | null
-          is_flexible_date?: boolean | null
-          is_hidden?: boolean | null
-          location?: string | null
-          map_link?: string | null
-          name?: string | null
-          opening_hours?: string | null
-          place?: string | null
-          price?: number | null
-          price_child?: number | null
-          slot_limit_type?: string | null
-          type?: string | null
-        }
-        Update: {
-          activities?: Json | null
-          approval_status?: string | null
-          available_tickets?: number | null
-          closing_hours?: string | null
-          country?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          date?: string | null
-          days_opened?: string[] | null
-          description?: string | null
-          gallery_images?: string[] | null
-          id?: string | null
-          image_url?: string | null
-          images?: string[] | null
-          is_custom_date?: boolean | null
-          is_flexible_date?: boolean | null
-          is_hidden?: boolean | null
-          location?: string | null
-          map_link?: string | null
-          name?: string | null
-          opening_hours?: string | null
-          place?: string | null
-          price?: number | null
-          price_child?: number | null
-          slot_limit_type?: string | null
-          type?: string | null
         }
         Relationships: []
       }

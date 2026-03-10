@@ -15,6 +15,7 @@ import { ReviewSection } from "@/components/ReviewSection";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { trackReferralClick } from "@/lib/referralUtils";
 import { getShareLink } from "@/lib/shareUtils";
+import { extractIdFromSlug } from "@/lib/slugUtils";
 import { useBookingSubmit, BookingFormData } from "@/hooks/useBookingSubmit";
 import { useRealtimeItemAvailability } from "@/hooks/useRealtimeBookings";
 import { DetailNavBar } from "@/components/detail/DetailNavBar"; 
@@ -53,8 +54,7 @@ const SELECT_FIELDS = "id,name,location,place,country,image_url,gallery_images,i
 
 const EventDetail = () => {
   const { slug } = useParams();
-  // ✅ slug IS the id — no extractIdFromSlug needed
-  const id = slug ?? null;
+  const id = slug ? extractIdFromSlug(slug) : null;
   const navigate = useNavigate();
   const goBack = useSafeBack();
   const { user } = useAuth();

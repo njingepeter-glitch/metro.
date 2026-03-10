@@ -18,6 +18,7 @@ import { useSavedItems } from "@/hooks/useSavedItems";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
 import { trackReferralClick } from "@/lib/referralUtils";
 import { getShareLink } from "@/lib/shareUtils";
+import { extractIdFromSlug } from "@/lib/slugUtils";
 import { DetailNavBar } from "@/components/detail/DetailNavBar";
 import { ImageGalleryModal } from "@/components/detail/ImageGalleryModal";
 import { QuickNavigationBar } from "@/components/detail/QuickNavigationBar";
@@ -29,8 +30,7 @@ import { Footer } from "@/components/Footer";
 
 const AdventurePlaceDetail = () => {
   const { slug } = useParams();
-  // ✅ slug IS the id — matches EventDetail pattern exactly
-  const id = slug ?? null;
+  const id = slug ? extractIdFromSlug(slug) : null;
   const navigate = useNavigate();
   const goBack = useSafeBack();
   const { toast } = useToast();
