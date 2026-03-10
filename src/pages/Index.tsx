@@ -465,22 +465,24 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Category pills - full-width grid matching Quick Nav card style */}
-          <div className="absolute bottom-3 left-0 right-0 z-10 px-4 md:px-6">
-            <div className="grid grid-cols-5 gap-2 w-full">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.title}
-                  onClick={() => navigate(cat.path)}
-                  className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border border-white/20 transition-all hover:scale-105 active:scale-95 shadow-lg backdrop-blur-sm"
-                  style={{ backgroundColor: cat.color }}
-                >
-                  <div className="h-9 w-9 rounded-xl bg-white/20 flex items-center justify-center">
-                    <cat.icon className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-[10px] font-bold text-white leading-tight text-center">{cat.title}</span>
-                </button>
-              ))}
+          {/* Category pills - aligned to same container width as page content */}
+          <div className="absolute bottom-3 left-0 right-0 z-10">
+            <div className="container mx-auto px-4 md:px-6">
+              <div className="grid grid-cols-5 gap-2 w-full">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.title}
+                    onClick={() => navigate(cat.path)}
+                    className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border border-white/20 transition-all hover:scale-105 active:scale-95 shadow-lg backdrop-blur-sm"
+                    style={{ backgroundColor: cat.color }}
+                  >
+                    <div className="h-9 w-9 rounded-xl bg-white/20 flex items-center justify-center">
+                      <cat.icon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-[10px] font-bold text-white leading-tight text-center">{cat.title}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
