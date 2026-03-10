@@ -467,7 +467,7 @@ const Index = () => {
 
           {/* Category pills - full-width grid matching Quick Nav card style */}
           <div className="absolute bottom-3 left-0 right-0 z-10 px-4 md:px-6">
-            <div className="grid grid-cols-5 gap-2 w-full max-w-lg mx-auto">
+            <div className="grid grid-cols-5 gap-2 w-full">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.title}
