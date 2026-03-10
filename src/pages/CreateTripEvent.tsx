@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSafeBack } from "@/hooks/useSafeBack";
 import { Header } from "@/components/Header";
@@ -22,8 +22,6 @@ import { OperatingHoursSection } from "@/components/creation/OperatingHoursSecti
 import { useCurrency } from "@/contexts/CurrencyContext";
 
 const COLORS = { TEAL: "#008080", CORAL: "#FF7F50", CORAL_LIGHT: "#FF9E7A", SOFT_GRAY: "#F8F9FA" };
-
-// ✅ generateUUID removed — friendlySlug is now used as the primary id
 
 const generateFriendlySlug = (name: string): string => {
   const cleanName = name
@@ -53,6 +51,33 @@ const CreateTripEvent = () => {
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showReview, setShowReview] = useState(false);
+
+  // ✅ Refs for scrolling to error fields
+  const refs = {
+    name: useRef<HTMLDivElement>(null),
+    country: useRef<HTMLDivElement>(null),
+    place: useRef<HTMLDivElement>(null),
+    location: useRef<HTMLDivElement>(null),
+    date: useRef<HTMLDivElement>(null),
+    price: useRef<HTMLDivElement>(null),
+    available_tickets: useRef<HTMLDivElement>(null),
+    phone_number: useRef<HTMLDivElement>(null),
+    description: useRef<HTMLDivElement>(null),
+    gallery: useRef<HTMLDivElement>(null),
+  };
+
+  const scrollToFirstError = (errors: string[]) => {
+    const order = ["name", "country", "place", "location", "date", "price", "available_tickets", "phone_number", "gallery", "description"];
+    for (const field of order) {
+      if (errors.includes(field)) {
+        const ref = refs[field as keyof typeof refs];
+        if (ref?.current) {
+          ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+          break;
+        }
+      }
+    }
+  };
 
   const [formData, setFormData] = useState({
     name: "", description: "", location: "", place: "", country: "", date: "",
@@ -97,14 +122,20 @@ const CreateTripEvent = () => {
     const newFiles = Array.from(files).slice(0, 5 - galleryImages.length);
     try {
       const compressed = await compressImages(newFiles);
-      setGalleryImages(prev => [...prev, ...compressed.map(c => c.file)].slice(0, 5));
-    } catch { setGalleryImages(prev => [...prev, ...newFiles].slice(0, 5)); }
+      const updated = [...galleryImages, ...compressed.map(c => c.file)].slice(0, 5);
+      setGalleryImages(updated);
+      // ✅ Clear gallery error as soon as 5 images are selected
+      if (updated.length >= 5) setValidationErrors(prev => prev.filter(e => e !== "gallery"));
+    } catch {
+      const updated = [...galleryImages, ...newFiles].slice(0, 5);
+      setGalleryImages(updated);
+      if (updated.length >= 5) setValidationErrors(prev => prev.filter(e => e !== "gallery"));
+    }
   };
 
   const removeImage = (index: number) => setGalleryImages(prev => prev.filter((_, i) => i !== index));
 
-  const handleSubmit = async () => {
-    if (!user) { navigate("/auth"); return; }
+  const validate = () => {
     const errors: string[] = [];
     if (!formData.name.trim()) errors.push("name");
     if (!formData.country) errors.push("country");
@@ -116,16 +147,39 @@ const CreateTripEvent = () => {
     if (!formData.phone_number) errors.push("phone_number");
     if (!formData.description.trim()) errors.push("description");
     if (galleryImages.length < 5) errors.push("gallery");
+    return errors;
+  };
 
+  const handleReview = () => {
+    const errors = validate();
+    setValidationErrors(errors);
+    if (errors.length > 0) {
+      toast({
+        title: `${errors.length} field${errors.length > 1 ? "s" : ""} need${errors.length === 1 ? "s" : ""} attention`,
+        description: errors.includes("gallery")
+          ? `Upload ${5 - galleryImages.length} more photo${5 - galleryImages.length > 1 ? "s" : ""} + fill all marked fields.`
+          : "Please fill in all highlighted fields.",
+        variant: "destructive",
+      });
+      setTimeout(() => scrollToFirstError(errors), 100);
+      return;
+    }
+    setShowReview(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubmit = async () => {
+    if (!user) { navigate("/auth"); return; }
+    const errors = validate();
     setValidationErrors(errors);
     if (errors.length > 0) {
       toast({ title: "Required Fields", description: "Please fill in all marked fields.", variant: "destructive" });
+      setTimeout(() => scrollToFirstError(errors), 100);
       return;
     }
 
     setLoading(true);
     try {
-      // ✅ KEY CHANGE: friendlySlug is used as BOTH id and slug
       const friendlySlug = generateFriendlySlug(formData.name);
 
       const uploadedUrls: string[] = [];
@@ -148,7 +202,6 @@ const CreateTripEvent = () => {
       }
 
       const { error } = await supabase.from("trips").insert([{
-        // ✅ id is now the friendly slug (text), NOT a UUID
         id: friendlySlug,
         slug: friendlySlug,
         name: formData.name,
@@ -224,24 +277,28 @@ const CreateTripEvent = () => {
           <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 space-y-6">
             <h2 className="text-xs font-black uppercase tracking-widest" style={{ color: COLORS.TEAL }}>Experience Details</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2 md:col-span-2">
+              <div ref={refs.name} className="space-y-2 md:col-span-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Experience Name *</Label>
                 <StyledInput isInvalid={validationErrors.includes("name")} value={formData.name} onChange={(e) => { setFormData({...formData, name: e.target.value}); if(e.target.value) setValidationErrors(prev => prev.filter(err => err !== "name")); }} placeholder="e.g. Hiking in the Clouds" />
+                {validationErrors.includes("name") && <p className="text-red-500 text-[10px] font-bold">⚠ Experience name is required</p>}
               </div>
-              <div className="space-y-2">
+              <div ref={refs.country} className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Country *</Label>
                 <div className={validationErrors.includes("country") ? "rounded-xl ring-1 ring-red-500" : ""}><CountrySelector value={formData.country} onChange={(val) => { setFormData({...formData, country: val}); setValidationErrors(prev => prev.filter(err => err !== "country")); }} /></div>
+                {validationErrors.includes("country") && <p className="text-red-500 text-[10px] font-bold">⚠ Country is required</p>}
               </div>
-              <div className="space-y-2">
+              <div ref={refs.place} className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Region / Place *</Label>
-                <div className="relative"><MapPin className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("place")} className="pl-11" value={formData.place} onChange={(e) => setFormData({...formData, place: e.target.value})} placeholder="e.g. Mt. Kenya Region" /></div>
+                <div className="relative"><MapPin className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("place")} className="pl-11" value={formData.place} onChange={(e) => { setFormData({...formData, place: e.target.value}); if(e.target.value) setValidationErrors(prev => prev.filter(err => err !== "place")); }} placeholder="e.g. Mt. Kenya Region" /></div>
+                {validationErrors.includes("place") && <p className="text-red-500 text-[10px] font-bold">⚠ Region/Place is required</p>}
               </div>
-              <div className="space-y-2 md:col-span-2">
+              <div ref={refs.location} className="space-y-2 md:col-span-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Specific Location *</Label>
-                <StyledInput isInvalid={validationErrors.includes("location")} value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="e.g. Nanyuki Main Gate" />
+                <StyledInput isInvalid={validationErrors.includes("location")} value={formData.location} onChange={(e) => { setFormData({...formData, location: e.target.value}); if(e.target.value) setValidationErrors(prev => prev.filter(err => err !== "location")); }} placeholder="e.g. Nanyuki Main Gate" />
+                {validationErrors.includes("location") && <p className="text-red-500 text-[10px] font-bold">⚠ Specific location is required</p>}
               </div>
             </div>
-            <div className="space-y-4 pt-4 border-t border-slate-50">
+            <div ref={refs.date} className="space-y-4 pt-4 border-t border-slate-50">
               <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Date Settings *</Label>
               {formData.type === "trip" && (
                 <div className="flex items-center space-x-3 bg-slate-50 p-4 rounded-2xl">
@@ -272,7 +329,10 @@ const CreateTripEvent = () => {
                 </div>
               )}
               {!formData.is_custom_date && (
-                <div className="relative"><Calendar className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("date")} type="date" className="pl-11" min={new Date().toISOString().split('T')[0]} value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} /></div>
+                <>
+                  <div className="relative"><Calendar className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("date")} type="date" className="pl-11" min={new Date().toISOString().split('T')[0]} value={formData.date} onChange={(e) => { setFormData({...formData, date: e.target.value}); if(e.target.value) setValidationErrors(prev => prev.filter(err => err !== "date")); }} /></div>
+                  {validationErrors.includes("date") && <p className="text-red-500 text-[10px] font-bold">⚠ Please select a date</p>}
+                </>
               )}
             </div>
           </Card>
@@ -281,9 +341,22 @@ const CreateTripEvent = () => {
           <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
             <h2 className="text-xs font-black uppercase tracking-widest mb-6" style={{ color: COLORS.TEAL }}>Pricing & Logistics</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Adult Price (KSh) *</Label><div className="relative"><DollarSign className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("price")} type="number" className="pl-11" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} /></div>{parseFloat(formData.price) > 0 && <p className="text-[9px] text-blue-500 font-bold mt-0.5">{usdHint(parseFloat(formData.price))}</p>}</div>
-              <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Child Price (KSh)</Label><div className="relative"><DollarSign className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput type="number" className="pl-11" value={formData.price_child} onChange={(e) => setFormData({...formData, price_child: e.target.value})} /></div>{parseFloat(formData.price_child) > 0 && <p className="text-[9px] text-blue-500 font-bold mt-0.5">{usdHint(parseFloat(formData.price_child))}</p>}</div>
-              <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Max Slots *</Label><div className="relative"><Users className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("available_tickets")} type="number" className="pl-11" value={formData.available_tickets} onChange={(e) => setFormData({...formData, available_tickets: e.target.value})} /></div></div>
+              <div ref={refs.price} className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Adult Price (KSh) *</Label>
+                <div className="relative"><DollarSign className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("price")} type="number" className="pl-11" value={formData.price} onChange={(e) => { setFormData({...formData, price: e.target.value}); if(e.target.value && parseFloat(e.target.value) >= 0) setValidationErrors(prev => prev.filter(err => err !== "price")); }} /></div>
+                {parseFloat(formData.price) > 0 && <p className="text-[9px] text-blue-500 font-bold mt-0.5">{usdHint(parseFloat(formData.price))}</p>}
+                {validationErrors.includes("price") && <p className="text-red-500 text-[10px] font-bold">⚠ Enter a valid price</p>}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Child Price (KSh)</Label>
+                <div className="relative"><DollarSign className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput type="number" className="pl-11" value={formData.price_child} onChange={(e) => setFormData({...formData, price_child: e.target.value})} /></div>
+                {parseFloat(formData.price_child) > 0 && <p className="text-[9px] text-blue-500 font-bold mt-0.5">{usdHint(parseFloat(formData.price_child))}</p>}
+              </div>
+              <div ref={refs.available_tickets} className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Max Slots *</Label>
+                <div className="relative"><Users className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput isInvalid={validationErrors.includes("available_tickets")} type="number" className="pl-11" value={formData.available_tickets} onChange={(e) => { setFormData({...formData, available_tickets: e.target.value}); if(e.target.value && parseInt(e.target.value) > 0) setValidationErrors(prev => prev.filter(err => err !== "available_tickets")); }} /></div>
+                {validationErrors.includes("available_tickets") && <p className="text-red-500 text-[10px] font-bold">⚠ Enter number of slots (min 1)</p>}
+              </div>
             </div>
           </Card>
 
@@ -305,11 +378,12 @@ const CreateTripEvent = () => {
                 </Label>
                 <StyledInput type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="contact@example.com" />
               </div>
-              <div className="space-y-2 bg-slate-50/80 rounded-2xl p-4">
+              <div ref={refs.phone_number} className="space-y-2 bg-slate-50/80 rounded-2xl p-4">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#FF7F50]" /> Contact Phone *
                 </Label>
-                <div className={validationErrors.includes("phone_number") ? "rounded-xl ring-1 ring-red-500" : ""}><PhoneInput value={formData.phone_number} onChange={(val) => setFormData({...formData, phone_number: val})} country={formData.country} placeholder="712345678" /></div>
+                <div className={validationErrors.includes("phone_number") ? "rounded-xl ring-1 ring-red-500" : ""}><PhoneInput value={formData.phone_number} onChange={(val) => { setFormData({...formData, phone_number: val}); if(val) setValidationErrors(prev => prev.filter(err => err !== "phone_number")); }} country={formData.country} placeholder="712345678" /></div>
+                {validationErrors.includes("phone_number") && <p className="text-red-500 text-[10px] font-bold">⚠ Phone number is required</p>}
               </div>
             </div>
             <div className="p-4 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50">
@@ -317,12 +391,26 @@ const CreateTripEvent = () => {
                 <Navigation className="h-5 w-5 mr-3" />{formData.map_link ? '✓ Location Captured' : 'Tap to Capture GPS Location'}
               </Button>
             </div>
-            {/* Gallery */}
-            <div className="pt-6 border-t border-slate-100">
-              <h3 className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: COLORS.TEAL }}>
-                Gallery (Min 5, Max 5) {galleryImages.length < 5 && <span className="text-destructive ml-1">— need {5 - galleryImages.length} more</span>}
+
+            {/* ✅ Gallery — now with visible error state and ref for scroll */}
+            <div ref={refs.gallery} className={`pt-6 border-t transition-all ${validationErrors.includes("gallery") ? "border-red-300" : "border-slate-100"}`}>
+              <h3 className={`text-xs font-black uppercase tracking-widest mb-2 ${validationErrors.includes("gallery") ? "text-red-500" : ""}`} style={validationErrors.includes("gallery") ? {} : { color: COLORS.TEAL }}>
+                Photos * — {galleryImages.length}/5 uploaded
+                {galleryImages.length < 5 && (
+                  <span className="text-red-500 ml-1">— {5 - galleryImages.length} more needed</span>
+                )}
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+              {validationErrors.includes("gallery") && (
+                <div className="mb-4 px-4 py-3 bg-red-50 border border-red-300 rounded-2xl flex items-center gap-2">
+                  <span className="text-red-500 text-lg">⚠</span>
+                  <p className="text-red-600 text-xs font-bold uppercase tracking-wide">
+                    You need exactly 5 photos. Please upload {5 - galleryImages.length} more photo{5 - galleryImages.length > 1 ? "s" : ""} to continue.
+                  </p>
+                </div>
+              )}
+
+              <div className={`grid grid-cols-2 md:grid-cols-5 gap-4 p-4 rounded-2xl transition-all ${validationErrors.includes("gallery") ? "ring-2 ring-red-400 bg-red-50/20" : "bg-slate-50/30"}`}>
                 {galleryImages.map((file, index) => (
                   <div key={index} className="relative aspect-square rounded-[20px] overflow-hidden border-2 border-slate-100">
                     <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="Preview" />
@@ -330,8 +418,12 @@ const CreateTripEvent = () => {
                   </div>
                 ))}
                 {galleryImages.length < 5 && (
-                  <Label className="aspect-square rounded-[20px] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50">
-                    <Camera className="h-6 w-6 text-slate-400" /><Input type="file" multiple className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e.target.files)} />
+                  <Label className={`aspect-square rounded-[20px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-white transition-all ${validationErrors.includes("gallery") ? "border-red-400 bg-red-50" : "border-slate-200 hover:bg-slate-50"}`}>
+                    <Camera className={`h-6 w-6 ${validationErrors.includes("gallery") ? "text-red-400" : "text-slate-400"}`} />
+                    <span className={`text-[9px] font-bold mt-1 uppercase tracking-wide ${validationErrors.includes("gallery") ? "text-red-400" : "text-slate-400"}`}>
+                      Add Photo
+                    </span>
+                    <Input type="file" multiple className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e.target.files)} />
                   </Label>
                 )}
               </div>
@@ -355,41 +447,25 @@ const CreateTripEvent = () => {
           )}
 
           {/* Description */}
-          <Card className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
+          <Card ref={refs.description} className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
             <Label className="text-xs font-black uppercase tracking-widest mb-4 block" style={{ color: COLORS.TEAL }}>Experience Description *</Label>
             <Textarea className={`rounded-[24px] border-slate-100 bg-slate-50 p-6 min-h-[200px] focus:ring-[#008080] text-sm ${validationErrors.includes("description") ? "border-red-500 ring-1 ring-red-500" : ""}`} value={formData.description} onChange={(e) => {
               const words = e.target.value.trim().split(/\s+/);
               if (e.target.value.trim() === "" || words.length <= 20) {
                 setFormData({...formData, description: e.target.value});
               }
+              if (e.target.value.trim()) setValidationErrors(prev => prev.filter(err => err !== "description"));
             }} placeholder="Describe in 20 words or less..." />
             <p className="text-xs text-muted-foreground mt-1">
               {formData.description.trim() ? formData.description.trim().split(/\s+/).length : 0}/20 words
             </p>
+            {validationErrors.includes("description") && <p className="text-red-500 text-[10px] font-bold mt-1">⚠ Description is required</p>}
           </Card>
 
           {/* Review & Submit */}
           {!showReview ? (
             <div className="mb-8">
-              <Button type="button" onClick={() => {
-                const errors: string[] = [];
-                if (!formData.name.trim()) errors.push("name");
-                if (!formData.country) errors.push("country");
-                if (!formData.place.trim()) errors.push("place");
-                if (!formData.location.trim()) errors.push("location");
-                if (!formData.is_custom_date && !formData.date) errors.push("date");
-                if (!formData.price || parseFloat(formData.price) < 0) errors.push("price");
-                if (!formData.available_tickets || parseInt(formData.available_tickets) <= 0) errors.push("available_tickets");
-                if (!formData.phone_number) errors.push("phone_number");
-                if (!formData.description.trim()) errors.push("description");
-                setValidationErrors(errors);
-                if (errors.length > 0) {
-                  toast({ title: "Required Fields", description: "Please fill in all marked fields.", variant: "destructive" });
-                  return;
-                }
-                setShowReview(true);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              <Button type="button" onClick={handleReview}
                 className="w-full py-6 rounded-2xl font-black uppercase tracking-widest text-sm text-white"
                 style={{ background: `linear-gradient(135deg, ${COLORS.TEAL} 0%, #006666 100%)` }}>
                 <CheckCircle2 className="h-4 w-4 mr-2" /> Review Details
