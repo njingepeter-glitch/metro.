@@ -17,7 +17,8 @@ import { FacilitiesGrid, ActivitiesGrid } from "@/components/detail/FacilityActi
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { extractIdFromSlug } from "@/lib/slugUtils";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
-import { trackReferralClick, generateReferralLink } from "@/lib/referralUtils";
+import { trackReferralClick } from "@/lib/referralUtils";
+import { getShareLink } from "@/lib/shareUtils";
 import { DetailNavBar } from "@/components/detail/DetailNavBar";
 import { ImageGalleryModal } from "@/components/detail/ImageGalleryModal";
 import { QuickNavigationBar } from "@/components/detail/QuickNavigationBar";
