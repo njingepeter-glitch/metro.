@@ -104,6 +104,16 @@ const CATEGORIES = [
   { icon: Home, title: "Stays", path: "/category/accommodation", color: "hsl(270, 60%, 50%)", bgClass: "bg-purple-600" },
 ];
 
+// ─── Quick navigation cards below hero ──────────────────────────────────────
+const QUICK_NAV = [
+  { icon: Calendar, title: "Trips", path: "/category/trips", color: "hsl(25, 90%, 50%)" },
+  { icon: Hotel, title: "Hotels", path: "/category/hotels", color: "hsl(220, 70%, 50%)" },
+  { icon: Trophy, title: "Events & Sports", path: "/category/events", color: "hsl(340, 75%, 50%)" },
+  { icon: Tent, title: "Adventure Places", path: "/category/campsite", color: "hsl(142, 70%, 35%)" },
+  { icon: Ticket, title: "Bookings", path: "/bookings", color: "hsl(200, 70%, 45%)" },
+  { icon: Heart, title: "Saved", path: "/saved", color: "hsl(350, 80%, 55%)" },
+];
+
 // ─── Main component ──────────────────────────────────────────────────────────
 const Index = () => {
   const navigate = useNavigate();

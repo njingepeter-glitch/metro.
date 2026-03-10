@@ -33,32 +33,33 @@ const BecomeHost = () => {
       return;
     }
 
-    // Check profile completion
-    const checkProfileComplete = async () => {
-      const { data } = await supabase.from('profiles').select('profile_completed').eq('id', user.id).single();
-      if (data && !data.profile_completed) {
-        navigate('/complete-profile');
-        return;
-      }
-    };
-    checkProfileComplete();
+    let cancelled = false;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const refId = urlParams.get("ref");
-    if (refId) {
-      trackHostReferral(refId);
-    }
-
-    const checkVerificationAndFetchData = async () => {
+    const init = async () => {
       try {
+        // Check profile completion
+        const { data: profileData } = await supabase.from('profiles').select('profile_completed').eq('id', user.id).single();
+        if (cancelled) return;
+        if (profileData && !profileData.profile_completed) {
+          navigate('/complete-profile');
+          return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const refId = urlParams.get("ref");
+        if (refId) {
+          trackHostReferral(refId);
+        }
+
         const { data: verification, error: verificationError } = await supabase
           .from("host_verifications")
           .select("*")
           .eq("user_id", user.id)
           .single();
 
+        if (cancelled) return;
+
         if (verificationError && verificationError.code !== 'PGRST116') {
-          toast({ title: "Error", description: "Verification check failed.", variant: "destructive" });
           setLoading(false);
           return;
         }
@@ -69,10 +70,12 @@ const BecomeHost = () => {
 
         if (verification.status === "approved") {
           const [trips, hotels, adventures] = await Promise.all([
-            supabase.from("trips").select("*").eq("created_by", user.id),
-            supabase.from("hotels").select("*").eq("created_by", user.id),
-            supabase.from("adventure_places").select("*").eq("created_by", user.id)
+            supabase.from("trips").select("id,name,type").eq("created_by", user.id),
+            supabase.from("hotels").select("id,name").eq("created_by", user.id),
+            supabase.from("adventure_places").select("id,name").eq("created_by", user.id)
           ]);
+
+          if (cancelled) return;
 
           const allContent = [
             ...(trips.data?.map(t => ({ ...t, type: "trip" })) || []),
@@ -80,14 +83,16 @@ const BecomeHost = () => {
             ...(adventures.data?.map(a => ({ ...a, type: "adventure" })) || [])
           ];
           setMyContent(allContent);
-          setLoading(false);
         }
       } catch (error) {
         console.error(error);
-        setLoading(false);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
-    checkVerificationAndFetchData();
+    init();
+
+    return () => { cancelled = true; };
   }, [user, navigate]);
 
   const trackHostReferral = async (referrerId: string) => {
