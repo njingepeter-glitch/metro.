@@ -13,7 +13,8 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import Autoplay from "embla-carousel-autoplay";
 import { ReviewSection } from "@/components/ReviewSection";
 import { useSavedItems } from "@/hooks/useSavedItems";
-import { generateReferralLink, trackReferralClick } from "@/lib/referralUtils";
+import { trackReferralClick } from "@/lib/referralUtils";
+import { getShareLink } from "@/lib/shareUtils";
 import { useBookingSubmit, BookingFormData } from "@/hooks/useBookingSubmit";
 import { extractIdFromSlug } from "@/lib/slugUtils";
 import { useRealtimeItemAvailability } from "@/hooks/useRealtimeBookings";
