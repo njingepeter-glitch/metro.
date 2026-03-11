@@ -7,6 +7,9 @@
     <meta name="description" content="Transform images into coded text art. An instrument for digital excavation.">
     <meta name="author" content="Oblique Assembly" />
     
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#008080">
+    <link rel="apple-touch-icon" href="/fulllogo.png">
     
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8aa7dfdc-714a-4654-bc76-85831dabe093/id-preview-e4c8ec78--54126a3a-d2a5-47d7-8f11-cd78337ac8a4.lovable.app-1773201466689.png">
@@ -15,13 +18,24 @@
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8aa7dfdc-714a-4654-bc76-85831dabe093/id-preview-e4c8ec78--54126a3a-d2a5-47d7-8f11-cd78337ac8a4.lovable.app-1773201466689.png">
     <meta property="og:title" content="Oblique Assembly — Image Excavator">
-  <meta name="twitter:title" content="Oblique Assembly — Image Excavator">
-  <meta property="og:description" content="Transform images into coded text art. An instrument for digital excavation.">
-  <meta name="twitter:description" content="Transform images into coded text art. An instrument for digital excavation.">
-</head>
+    <meta name="twitter:title" content="Oblique Assembly — Image Excavator">
+    <meta property="og:description" content="Transform images into coded text art. An instrument for digital excavation.">
+    <meta name="twitter:description" content="Transform images into coded text art. An instrument for digital excavation.">
+  </head>
 
   <body>
     <div id="root"></div>
+    
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Excavator SW Active'))
+            .catch(err => console.log('SW Registration Error', err));
+        });
+      }
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
