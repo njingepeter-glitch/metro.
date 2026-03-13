@@ -228,7 +228,7 @@ const HotelDetail = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <DetailNavBar
         scrolled={scrolled}
         itemName={hotel.name}

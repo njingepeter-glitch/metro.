@@ -173,7 +173,7 @@ const TripDetail = () => {
   const allImages = [event?.image_url, ...(event?.gallery_images || []), ...(event?.images || [])].filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <DetailNavBar
         scrolled={scrolled}
         itemName={event.name}
