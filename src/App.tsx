@@ -114,7 +114,6 @@ const App = () => {
         <BrowserRouter>
           <AuthProvider>
             <CurrencyProvider>
-            <SmallScreenInstallBanner />
             <PageLayout>
               <Suspense fallback={<SuspenseFallback />}>
                 <div className="w-full">

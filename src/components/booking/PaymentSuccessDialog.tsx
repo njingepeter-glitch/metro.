@@ -44,7 +44,8 @@ export const PaymentSuccessDialog = ({
 
   const handleClose = () => {
     onOpenChange(false);
-    navigate(-1);
+    // Go back to the detail page (2 steps back: booking page -> detail page)
+    navigate(-2);
   };
 
   return (

@@ -20,18 +20,12 @@ export const DetailNavBar = ({
 }: DetailNavBarProps) => {
   return (
     <>
-      {/* ── Sticky scroll-in nav bar (mobile + desktop) ── */}
+      {/* ── Always-visible nav bar (mobile + desktop) ── */}
       <div
-        className={`
-          fixed top-0 left-0 right-0 z-[100]
-          transition-all duration-300 ease-in-out
-          ${scrolled
-            ? "translate-y-0 opacity-100 pointer-events-auto"
-            : "-translate-y-full opacity-0 pointer-events-none"}
-        `}
+        className="fixed top-0 left-0 right-0 z-[100]"
       >
-        {/* Frosted glass pill on mobile */}
-        <div className="md:hidden mx-3 mt-3">
+        {/* Mobile frosted glass pill - always visible, respects safe area */}
+        <div className="md:hidden mx-3 mt-3" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
           <div
             className="
               flex items-center justify-between
@@ -106,15 +100,19 @@ export const DetailNavBar = ({
           </div>
         </div>
 
-        {/* Desktop sticky nav (wider, cleaner) */}
+        {/* Desktop sticky nav */}
         <div
-          className="
+          className={`
             hidden md:flex items-center justify-between
             px-6 py-3
             bg-white/80 backdrop-blur-xl
             border-b border-slate-200/60
             shadow-sm
-          "
+            transition-all duration-300 ease-in-out
+            ${scrolled
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-full opacity-0 pointer-events-none"}
+          `}
         >
           <button
             onClick={onBack}
@@ -151,65 +149,6 @@ export const DetailNavBar = ({
           </button>
         </div>
       </div>
-
-      {/* ── Mobile floating hero buttons (always visible over image) ── */}
-      {/* These replace the inline buttons in the hero section for small screens */}
-      {!scrolled && (
-        <div className="md:hidden fixed top-0 left-0 right-0 z-50 px-3 pt-4 flex justify-between items-center pointer-events-none">
-          <button
-            onClick={onBack}
-            style={{ pointerEvents: "auto" }}
-            className="
-              flex items-center justify-center
-              w-10 h-10 rounded-full
-              bg-black/30 backdrop-blur-md
-              border border-white/20
-              text-white
-              shadow-lg
-              transition-all duration-150 active:scale-90
-            "
-          >
-            <ArrowLeft className="h-5 w-5 stroke-[2.5]" />
-          </button>
-
-          <div className="flex gap-2" style={{ pointerEvents: "auto" }}>
-            {onShare && (
-              <button
-                onClick={onShare}
-                className="
-                  flex items-center justify-center
-                  w-10 h-10 rounded-full
-                  bg-black/30 backdrop-blur-md
-                  border border-white/20
-                  text-white shadow-lg
-                  transition-all duration-150 active:scale-90
-                "
-              >
-                <Share2 className="h-4 w-4" />
-              </button>
-            )}
-            <button
-              onClick={onSave}
-              className={`
-                flex items-center justify-center
-                w-10 h-10 rounded-full
-                backdrop-blur-md border shadow-lg
-                transition-all duration-200 active:scale-90
-                ${isSaved
-                  ? "bg-red-500 border-red-400 shadow-[0_4px_16px_rgba(239,68,68,0.5)]"
-                  : "bg-black/30 border-white/20 text-white"}
-              `}
-            >
-              <Heart
-                className={`
-                  h-4.5 w-4.5 stroke-[2.5]
-                  ${isSaved ? "fill-white text-white" : "text-white"}
-                `}
-              />
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };

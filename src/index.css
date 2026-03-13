@@ -87,6 +87,8 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Capacitor safe area support */
+    padding-top: env(safe-area-inset-top, 0px);
   }
   
   /* Hide scrollbar for horizontal scroll sections */

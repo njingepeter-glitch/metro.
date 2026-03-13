@@ -27,8 +27,6 @@ export const MobileBottomBar = () => {
 
   const isAnySheetOpen = bookingsOpen || savedOpen;
 
-  // When the route changes (e.g. user tapped a saved item card and navigated),
-  // close any open sheet so the detail page is fully visible.
   useEffect(() => {
     setBookingsOpen(false);
     setSavedOpen(false);
@@ -54,12 +52,14 @@ export const MobileBottomBar = () => {
 
   return (
     <>
-      {/* ── Bottom Nav Bar ── */}
+      {/* ── Bottom Nav Bar with safe area padding ── */}
       <div className={cn(
-        "md:hidden fixed bottom-0 left-0 right-0 z-[110] bg-white/80 backdrop-blur-xl border-t border-slate-100 pb-safe shadow-[0_-8px_30px_rgb(0,0,0,0.04)]",
+        "md:hidden fixed bottom-0 left-0 right-0 z-[110] bg-white/80 backdrop-blur-xl border-t border-slate-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)]",
         isAnySheetOpen && "hidden"
-      )}>
-        <nav className="flex items-center justify-around h-20 px-6">
+      )}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      >
+        <nav className="flex items-center justify-around h-16 px-6">
           {navItems.map((item) => {
             const isSheetPath = item.path === "/bookings" || item.path === "/saved";
             const isActive =
@@ -173,8 +173,6 @@ export const MobileBottomBar = () => {
 
           <div
             className="flex-1 overflow-y-auto overscroll-contain pb-24 bg-white"
-            // touchAction pan-y is fine for Bookings since it has no tappable
-            // nav cards — only buttons which are native interactive elements.
             style={{ touchAction: "pan-y" }}
           >
             <Suspense fallback={<div className="flex items-center justify-center py-20"><TealLoader /></div>}>
@@ -204,25 +202,6 @@ export const MobileBottomBar = () => {
             <h2 className="text-lg font-semibold">{t('nav.savedItems')}</h2>
           </div>
 
-          {/*
-            KEY FIX for Saved card navigation:
-            ─────────────────────────────────────
-            REMOVED touchAction:"pan-y" and WebkitOverflowScrolling:"touch" from
-            this scroll container.
-
-            touchAction:"pan-y" tells the browser to claim ALL touch events for
-            scroll handling — this is what was preventing the <a> card taps from
-            firing even though native anchors normally bypass React's event system.
-            On iOS with WebkitOverflowScrolling:"touch" (momentum scrolling), this
-            interception is even more aggressive.
-
-            Without these two properties the browser uses default scroll behaviour
-            (which still works fine for overflow-y-auto) but no longer pre-empts
-            touch events on child elements — so <a> taps fire normally.
-
-            The location.pathname useEffect above closes the sheet as soon as the
-            router navigates, so the detail page appears cleanly.
-          */}
           <div className="flex-1 overflow-y-auto overscroll-contain pb-24 bg-white">
             <Suspense fallback={<div className="flex items-center justify-center py-20"><TealLoader /></div>}>
               <Saved />

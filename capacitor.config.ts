@@ -7,6 +7,11 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://f646294c-b155-424b-8553-55e27e90ad06.lovableproject.com?forceHideBadge=true',
     cleartext: true
+  },
+  plugins: {
+    Browser: {
+      // Use in-app browser for OAuth and payment flows
+    }
   }
 };
 
