@@ -396,9 +396,13 @@ const AdventurePlaceDetail = () => {
                   <p className="text-[9px] font-black text-slate-400 uppercase">{liveRating.count} reviews</p>
                 </div>
               </div>
+
+              {/* Operating Hours & Days inside booking card on mobile */}
+              <OperatingHoursInfo />
+
               <Button
                 onClick={() => navigate(`/booking/adventure_place/${resolvedId}`)}
-                className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95"
+                className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95 mt-4"
               >
                 Book Now
               </Button>

@@ -393,10 +393,14 @@ const HotelDetail = () => {
                   </div>
                 )}
               </div>
+
+              {/* Operating Hours & Days inside booking card on mobile */}
+              <OperatingHoursInfo />
+
               {isAccommodationOnly && hotel.general_booking_link ? (
-                <ExternalBookingButton url={hotel.general_booking_link} className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95">Reserve Now</ExternalBookingButton>
+                <ExternalBookingButton url={hotel.general_booking_link} className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95 mt-4">Reserve Now</ExternalBookingButton>
               ) : (
-                <Button onClick={() => navigate(`/booking/hotel/${hotel.id}`)} className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95">Book Now</Button>
+                <Button onClick={() => navigate(`/booking/hotel/${hotel.id}`)} className="w-full py-7 rounded-2xl text-md font-black uppercase tracking-widest bg-gradient-to-r from-[#FF7F50] to-[#FF4E50] border-none shadow-lg transition-all active:scale-95 mt-4">Book Now</Button>
               )}
               <div className="grid grid-cols-3 gap-3 mt-4">
                 <UtilityButton icon={<Navigation className="h-5 w-5" />} label="Map" onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hotel.name}, ${hotel.location}`)}`, "_blank")} />
