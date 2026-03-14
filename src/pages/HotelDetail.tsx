@@ -355,21 +355,7 @@ const HotelDetail = () => {
 
             {/* Operating hours moved into mobile booking card below */}
 
-            <GeneralFacilitiesDisplay facilityIds={hotel.amenities || []} />
-
-            {hotel.facilities?.length > 0 && (
-              <div id="facilities-section">
-                <FacilitiesGrid facilities={hotel.facilities} itemId={hotel.id} itemType="hotel" accentColor="#008080" useExternalLink={isAccommodationOnly} />
-              </div>
-            )}
-
-            {hotel.activities?.length > 0 && (
-              <div id="activities-section">
-                <ActivitiesGrid activities={hotel.activities} itemId={hotel.id} itemType="hotel" accentColor="#FF7F50" />
-              </div>
-            )}
-
-            {/* Mobile booking card */}
+            {/* Mobile booking card - above amenities/activities */}
             <div className="bg-white rounded-[32px] p-6 shadow-xl border border-slate-100 lg:hidden">
               <div className="flex justify-between items-start mb-6">
                 <div>
