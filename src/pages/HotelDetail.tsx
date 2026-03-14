@@ -366,7 +366,7 @@ const HotelDetail = () => {
                       <span className="text-[10px] font-bold text-slate-400 uppercase">/ adult</span>
                     </div>
                   ) : (
-                    <span className="text-lg font-bold text-emerald-600">Free Entry</span>
+                    <span className="text-sm font-normal text-emerald-600">Free Entry</span>
                   )}
                 </div>
                 {!isAccommodationOnly && (
