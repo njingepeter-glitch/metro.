@@ -48,7 +48,7 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
                 <Menu className="h-7 w-7 stroke-[2.5]" />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0 h-screen border-none">
+            <SheetContent side="left" className="w-full sm:w-72 p-0 h-screen border-none">
               <NavigationDrawer onClose={() => setIsDrawerOpen(false)} />
             </SheetContent>
           </Sheet>
