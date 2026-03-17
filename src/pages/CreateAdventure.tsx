@@ -854,7 +854,8 @@ const CreateAdventure = () => {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Child Entry (KSh)</Label>
-                    <Input type="number" value={formData.childPrice} onChange={(e) => setFormData({ ...formData, childPrice: e.target.value })} className="rounded-xl h-12 font-bold" />
+                    <Input type="number" min="0" value={formData.childPrice} onChange={(e) => setFormData({ ...formData, childPrice: e.target.value })} className="rounded-xl h-12 font-bold" />
+                    <p className="text-[9px] text-muted-foreground">Set to 0 if not applicable for children</p>
                     {parseFloat(formData.childPrice) > 0 && <p className="text-[9px] text-blue-500 font-bold mt-0.5">{usdHint(parseFloat(formData.childPrice))}</p>}
                   </div>
                 </>)}

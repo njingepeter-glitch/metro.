@@ -329,7 +329,8 @@ const CreateTripEvent = () => {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Child Price (KSh)</Label>
-                    <div className="relative"><DollarSign className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput type="number" className="pl-11" value={formData.price_child} onChange={(e) => setFormData({...formData, price_child: e.target.value})} /></div>
+                    <div className="relative"><DollarSign className="absolute left-4 top-3.5 h-4 w-4 text-slate-400" /><StyledInput type="number" min="0" className="pl-11" value={formData.price_child} onChange={(e) => setFormData({...formData, price_child: e.target.value})} /></div>
+                    <p className="text-[9px] text-muted-foreground">Set to 0 if not applicable for children</p>
                     {parseFloat(formData.price_child) > 0 && <p className="text-[9px] text-blue-500 font-bold mt-0.5">{usdHint(parseFloat(formData.price_child))}</p>}
                   </div>
                   <div className="space-y-2">

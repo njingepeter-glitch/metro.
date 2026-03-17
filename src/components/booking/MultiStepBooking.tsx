@@ -894,21 +894,21 @@ import { useSearchParams } from "react-router-dom";
              Continue
            </Button>
          ) : (
-           <Button
-             onClick={handleSubmit}
-             disabled={isProcessing}
-             className="flex-1"
-             style={{ backgroundColor: accentColor }}
-           >
-             {isProcessing ? (
-               <>
-                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                 Processing...
-               </>
-             ) : (
-               "Confirm Booking"
-             )}
-           </Button>
+          <Button
+              onClick={handleSubmit}
+              disabled={isProcessing || calculateTotal() <= 0}
+              className="flex-1"
+              style={{ backgroundColor: accentColor }}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Confirm Booking"
+              )}
+            </Button>
          )}
        </div>
      </div>
