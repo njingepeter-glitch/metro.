@@ -367,6 +367,7 @@ const QRScanner = () => {
         setVerifiedBooking(result.booking as VerifiedBooking);
         if (result.itemName) setItemName(result.itemName);
         else if (result.booking?.item_name) setItemName(result.booking.item_name);
+        setItemDetails(result.itemData || null);
         setCheckedIn(true);
         setVerificationStatus("valid");
         toast({ 
@@ -380,6 +381,7 @@ const QRScanner = () => {
       setVerifiedBooking(result.booking as VerifiedBooking);
       if (result.itemName) setItemName(result.itemName);
       else if (result.booking?.item_name) setItemName(result.booking.item_name);
+      setItemDetails(result.itemData || null);
       setVerificationStatus("valid");
     } catch (err) {
       setVerificationStatus("error");
