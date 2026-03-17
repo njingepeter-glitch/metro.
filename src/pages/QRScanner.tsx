@@ -200,45 +200,127 @@ const QRScanner = () => {
   }, [checkedIn, isOnline, fetchArrivedGuests]);
 
 
+  const normalizeEmail = (value?: string | null) => value?.trim().toLowerCase() ?? "";
+  const normalizeDate = (value?: string | null) => value?.split("T")[0] ?? null;
+
+  const resolveItemData = async (bookingType: string, itemId: string) => {
+    if (bookingType === "trip" || bookingType === "event") {
+      const { data } = await supabase.from("trips").select("created_by, name").eq("id", itemId).maybeSingle();
+      return data;
+    }
+
+    if (bookingType === "hotel") {
+      const { data } = await supabase.from("hotels").select("created_by, name").eq("id", itemId).maybeSingle();
+      return data;
+    }
+
+    if (["adventure_place", "adventure", "campsite", "experience"].includes(bookingType)) {
+      const { data } = await supabase.from("adventure_places").select("created_by, name").eq("id", itemId).maybeSingle();
+      return data;
+    }
+
+    return null;
+  };
+
+  const resolveBookingFromPaymentReference = async (reference: string, email: string, visitDate: string) => {
+    const { data: payment, error: paymentError } = await supabase
+      .from("payments")
+      .select("checkout_request_id, payment_status, host_id, booking_data")
+      .eq("checkout_request_id", reference)
+      .maybeSingle();
+
+    if (paymentError || !payment) {
+      return null;
+    }
+
+    if (payment.host_id && payment.host_id !== user?.id) {
+      return { error: "This booking is not for your listing" };
+    }
+
+    const paymentBooking = payment.booking_data as Record<string, any> | null;
+    const itemId = paymentBooking?.item_id;
+    const targetEmail = normalizeEmail(paymentBooking?.guest_email || email);
+    const targetVisitDate = normalizeDate(paymentBooking?.visit_date || visitDate);
+
+    if (!itemId || !targetEmail) {
+      return null;
+    }
+
+    const { data: bookings, error: bookingError } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("item_id", itemId)
+      .order("created_at", { ascending: false })
+      .limit(10);
+
+    if (bookingError) {
+      console.error("QR verify - payment reference lookup failed:", bookingError.message, "reference:", reference);
+      return null;
+    }
+
+    const matchedBooking = (bookings || []).find((candidate) => {
+      const emailMatches = normalizeEmail(candidate.guest_email) === targetEmail;
+      const dateMatches = !targetVisitDate || normalizeDate(candidate.visit_date) === targetVisitDate;
+      return emailMatches && dateMatches;
+    });
+
+    return matchedBooking
+      ? {
+          booking: matchedBooking,
+          itemName: paymentBooking?.emailData?.itemName || paymentBooking?.booking_details?.item_name,
+        }
+      : null;
+  };
+
   const verifyBookingOnline = async (bookingId: string, email: string, visitDate: string) => {
-    const { data: booking, error } = await supabase.from("bookings").select("*").eq("id", bookingId).single();
-    if (error || !booking) {
-      console.error("QR verify - booking lookup failed:", error?.message, "bookingId:", bookingId);
+    let booking: any = null;
+    let itemName: string | undefined;
+
+    if (bookingId.startsWith("PAY_")) {
+      const paymentMatch = await resolveBookingFromPaymentReference(bookingId, email, visitDate);
+      if (paymentMatch && "error" in paymentMatch) {
+        return { valid: false, error: paymentMatch.error };
+      }
+      booking = paymentMatch?.booking ?? null;
+      itemName = paymentMatch?.itemName;
+    }
+
+    if (!booking) {
+      const { data, error } = await supabase.from("bookings").select("*").eq("id", bookingId).maybeSingle();
+      if (error) {
+        console.error("QR verify - booking lookup failed:", error.message, "bookingId:", bookingId);
+      }
+      booking = data;
+    }
+
+    if (!booking) {
       return { valid: false, error: "Booking not found. Please ensure the guest has a valid booking." };
     }
-    
-    // Email check - case insensitive
-    if (booking.guest_email?.toLowerCase() !== email?.toLowerCase()) {
+
+    if (normalizeEmail(booking.guest_email) !== normalizeEmail(email)) {
       return { valid: false, error: "Booking email doesn't match" };
     }
-    
-    if (booking.payment_status !== "completed" && booking.payment_status !== "paid") {
+
+    if (!["completed", "paid"].includes(booking.payment_status)) {
       return { valid: false, error: "Booking is not paid" };
     }
 
-    // Date comparison - normalize both to YYYY-MM-DD strings
-    const bookingVisitDate = booking.visit_date ? booking.visit_date.split('T')[0] : null;
-    const qrVisitDate = visitDate ? visitDate.split('T')[0] : null;
+    const bookingVisitDate = normalizeDate(booking.visit_date);
+    const qrVisitDate = normalizeDate(visitDate);
     if (bookingVisitDate && qrVisitDate && bookingVisitDate !== qrVisitDate) {
       return { valid: false, error: `Visit date mismatch: booking is for ${bookingVisitDate}` };
     }
 
-    let itemData: { created_by: string | null; name: string } | null = null;
-    const bookingType = booking.booking_type;
-
-    if (bookingType === "trip" || bookingType === "event") {
-      const { data } = await supabase.from("trips").select("created_by, name").eq("id", booking.item_id).single();
-      itemData = data;
-    } else if (bookingType === "hotel") {
-      const { data } = await supabase.from("hotels").select("created_by, name").eq("id", booking.item_id).single();
-      itemData = data;
-    } else if (bookingType === "adventure_place" || bookingType === "campsite" || bookingType === "experience") {
-      const { data } = await supabase.from("adventure_places").select("created_by, name").eq("id", booking.item_id).single();
-      itemData = data;
+    const itemData = await resolveItemData(booking.booking_type, booking.item_id);
+    if (itemData && itemData.created_by !== user?.id) {
+      return { valid: false, error: "This booking is not for your listing" };
     }
 
-    if (itemData && itemData.created_by !== user?.id) return { valid: false, error: "This booking is not for your listing" };
-    return { valid: true, booking, itemName: itemData?.name };
+    return {
+      valid: true,
+      booking,
+      itemName: itemName || itemData?.name || booking.booking_details?.item_name,
+    };
   };
 
   const verifyBooking = async (qrData: string) => {

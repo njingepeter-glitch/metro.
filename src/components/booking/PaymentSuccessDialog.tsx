@@ -22,25 +22,42 @@ export const PaymentSuccessDialog = ({
 }: PaymentSuccessDialogProps) => {
   const navigate = useNavigate();
 
-  // Extract booking details - handle both verify response format and raw booking data format
-  const details = bookingData?.booking_details || bookingData || {};
-  
-  const pdfData: BookingPDFData | null = bookingData ? {
-    bookingId: bookingData.bookingId || bookingData.id || reference,
-    guestName: bookingData.guestName || bookingData.guest_name || details.guest_name || 'Guest',
-    guestEmail: bookingData.guestEmail || bookingData.guest_email || details.guest_email || '',
-    guestPhone: bookingData.guestPhone || bookingData.guest_phone || details.guest_phone,
-    itemName: bookingData.itemName || bookingData.emailData?.itemName || details.item_name || 'Booking',
-    bookingType: bookingData.bookingType || bookingData.booking_type || details.booking_type || 'booking',
-    visitDate: bookingData.visitDate || bookingData.visit_date || details.visit_date || new Date().toISOString(),
-    totalAmount: bookingData.amount || bookingData.total_amount || details.total_amount || 0,
-    adults: bookingData.adults || details.adults || details.num_adults,
-    children: bookingData.children || details.children || details.num_children,
-    slotsBooked: bookingData.slotsBooked || bookingData.slots_booked || details.slots_booked,
-    paymentStatus: 'completed',
-    facilities: bookingData.facilities || details.facilities || details.selectedFacilities,
-    activities: bookingData.activities || details.activities || details.selectedActivities,
-  } : null;
+  // Extract booking details - prefer resolved booking row data, then nested booking_details, then safe fallbacks
+  const details = bookingData?.booking_details ?? bookingData?.bookingDetails ?? {};
+  const adults = bookingData?.adults ?? details?.adults ?? details?.num_adults;
+  const children = bookingData?.children ?? details?.children ?? details?.num_children;
+  const facilities = bookingData?.facilities ?? details?.facilities ?? details?.selectedFacilities ?? [];
+  const activities = bookingData?.activities ?? details?.activities ?? details?.selectedActivities ?? [];
+  const slotsBooked =
+    bookingData?.slotsBooked ??
+    bookingData?.slots_booked ??
+    details?.slots_booked ??
+    ((adults ?? 0) + (children ?? 0)) ||
+    undefined;
+
+  const pdfData: BookingPDFData | null = bookingData
+    ? {
+        bookingId: bookingData?.bookingId ?? bookingData?.id ?? reference,
+        guestName: bookingData?.guestName ?? bookingData?.guest_name ?? details?.guest_name ?? details?.guestName ?? 'Guest',
+        guestEmail: bookingData?.guestEmail ?? bookingData?.guest_email ?? details?.guest_email ?? details?.guestEmail ?? '',
+        guestPhone: bookingData?.guestPhone ?? bookingData?.guest_phone ?? details?.guest_phone ?? details?.guestPhone,
+        itemName:
+          bookingData?.itemName ??
+          bookingData?.item_name ??
+          bookingData?.emailData?.itemName ??
+          details?.item_name ??
+          'Booking',
+        bookingType: bookingData?.bookingType ?? bookingData?.booking_type ?? details?.booking_type ?? 'booking',
+        visitDate: bookingData?.visitDate ?? bookingData?.visit_date ?? details?.visit_date ?? new Date().toISOString(),
+        totalAmount: bookingData?.amount ?? bookingData?.total_amount ?? details?.total_amount ?? 0,
+        adults,
+        children,
+        slotsBooked,
+        paymentStatus: bookingData?.paymentStatus ?? bookingData?.payment_status ?? 'completed',
+        facilities,
+        activities,
+      }
+    : null;
 
   const handleViewBookings = () => {
     onOpenChange(false);

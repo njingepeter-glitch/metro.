@@ -279,13 +279,13 @@ serve(async (req) => {
             if (hostEmail) {
               await supabase.functions.invoke("send-host-booking-notification", {
                 body: {
-                  bookingId: booking?.id,
+                  bookingId: resolvedBooking?.id,
                   hostEmail: hostEmail,
                   guestName: bookingData.guest_name,
                   guestEmail: bookingData.guest_email,
                   guestPhone: bookingData.guest_phone,
                   bookingType: bookingData.booking_type,
-                  itemName: bookingData.emailData?.itemName || "Booking",
+                  itemName: bookingData.emailData?.itemName || bookingData.booking_details?.item_name || "Booking",
                   totalAmount: bookingData.total_amount,
                   hostPayoutAmount: hostPayoutAmount,
                   serviceFee: serviceFeeAmount,
@@ -298,38 +298,39 @@ serve(async (req) => {
           } catch (hostEmailError) {
             console.error("Error sending host notification email:", hostEmailError);
           }
-
-          // Return full booking details for PDF download
-          return new Response(
-            JSON.stringify({
-              success: true,
-              data: {
-                status: transaction.status,
-                reference: transaction.reference,
-                amount: transaction.amount / 100,
-                paid_at: transaction.paid_at,
-                channel: transaction.channel,
-                currency: transaction.currency,
-                isSuccessful,
-                bookingId: booking?.id,
-                guestName: bookingData.guest_name,
-                guestEmail: bookingData.guest_email,
-                guestPhone: bookingData.guest_phone,
-                itemName: bookingData.emailData?.itemName || "Booking",
-                bookingType: bookingData.booking_type,
-                visitDate: bookingData.visit_date,
-                slotsBooked: bookingData.slots_booked,
-                adults: bookingData.booking_details?.adults,
-                children: bookingData.booking_details?.children,
-                facilities: bookingData.booking_details?.facilities,
-                activities: bookingData.booking_details?.activities,
-                serviceFee: serviceFeeAmount,
-                hostPayout: hostPayoutAmount,
-              },
-            }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
         }
+
+        // Return full booking details for PDF download
+        const bookingDetails = bookingData.booking_details || {};
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: {
+              status: transaction.status,
+              reference: transaction.reference,
+              amount: Number(bookingData.total_amount ?? transaction.amount / 100 ?? 0),
+              paid_at: transaction.paid_at,
+              channel: transaction.channel,
+              currency: transaction.currency,
+              isSuccessful,
+              bookingId: resolvedBooking?.id ?? null,
+              guestName: bookingData.guest_name ?? bookingDetails.guest_name ?? "Guest",
+              guestEmail: bookingData.guest_email ?? bookingDetails.guest_email ?? "",
+              guestPhone: bookingData.guest_phone ?? bookingDetails.guest_phone ?? "",
+              itemName: bookingData.emailData?.itemName || bookingDetails.item_name || "Booking",
+              bookingType: bookingData.booking_type,
+              visitDate: bookingData.visit_date,
+              slotsBooked: bookingData.slots_booked ?? ((bookingDetails.adults ?? bookingDetails.num_adults ?? 0) + (bookingDetails.children ?? bookingDetails.num_children ?? 0)),
+              adults: bookingDetails.adults ?? bookingDetails.num_adults,
+              children: bookingDetails.children ?? bookingDetails.num_children,
+              facilities: bookingDetails.facilities ?? bookingDetails.selectedFacilities ?? [],
+              activities: bookingDetails.activities ?? bookingDetails.selectedActivities ?? [],
+              serviceFee: serviceFeeAmount,
+              hostPayout: hostPayoutAmount,
+            },
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
     }
 
