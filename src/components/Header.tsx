@@ -64,7 +64,8 @@ export const Header = ({ onSearchClick, showSearchIcon = true, className, __from
           ))}
         </nav>
         <div className="flex items-center gap-2 sm:gap-2">
-          <div className="[&_button]:text-white md:[&_button]:text-foreground [&_button]:h-10 [&_button]:w-10">
+          {/* Notification bell — matches menu button style on mobile */}
+          <div className={`${headerIconStyles} [&>*]:flex [&>*]:items-center [&>*]:justify-center`}>
             <NotificationBell />
           </div>
           {user ? (
