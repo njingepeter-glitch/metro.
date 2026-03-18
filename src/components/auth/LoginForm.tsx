@@ -57,23 +57,20 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    const redirectUrl = `${window.location.origin}/`;
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: redirectUrl,
-        queryParams: { prompt: "select_account" },
-      },
-    });
-
-    if (error) {
-      setLoading(false);
+    try {
+      const result = await signInWithGoogleNative();
+      // If result is null on web, redirect is happening. On native, navigate home.
+      if (result) {
+        navigate("/");
+      }
+    } catch (error: any) {
       toast({
         title: "Google login failed",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 

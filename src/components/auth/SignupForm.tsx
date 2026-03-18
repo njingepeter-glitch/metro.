@@ -173,13 +173,16 @@ export const SignupForm = () => {
   };
 
   const handleGoogleSignup = async () => {
-    const redirectUrl = `${window.location.origin}/`;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: redirectUrl },
-    });
-    if (error) {
+    setLoading(true);
+    try {
+      const result = await signInWithGoogleNative();
+      if (result) {
+        navigate("/");
+      }
+    } catch (error: any) {
       toast({ title: "Google signup failed", description: error.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
