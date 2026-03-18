@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { PageLayout } from "@/components/PageLayout";
-
+import { Capacitor } from "@capacitor/core";
 
 import { TealLoader } from "@/components/ui/teal-loader";
 import { OfflineFullScreen } from "@/components/OfflineIndicator";
