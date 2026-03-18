@@ -1,0 +1,1 @@
+DROP POLICY "Anonymous can view referral tracking by id" ON public.referral_tracking;
