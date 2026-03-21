@@ -56,6 +56,8 @@ const BecomeHost = () => {
 
         if (cancelled) return;
 
+        let localIsCompany = false;
+
         if (companyData) {
           if (companyData.verification_status === "pending") {
             navigate("/verification-status");
@@ -66,6 +68,7 @@ const BecomeHost = () => {
             return;
           }
           if (companyData.verification_status === "approved") {
+            localIsCompany = true;
             setIsCompany(true);
             setHostType("company");
           }
@@ -86,13 +89,11 @@ const BecomeHost = () => {
           if (cancelled) return;
 
           if (verificationError && verificationError.code !== 'PGRST116') {
-            // No verification exists - show host type selection
             setLoading(false);
             return;
           }
 
           if (!verification && !companyData) {
-            // Show host type selection
             setLoading(false);
             return;
           }
@@ -103,11 +104,11 @@ const BecomeHost = () => {
           }
         }
 
-        // Fetch content
+        // Fetch content using local variable instead of stale state
         const [trips, hotels, adventures] = await Promise.all([
           supabase.from("trips").select("id,name,type").eq("created_by", user.id),
-          isCompany ? Promise.resolve({ data: [] }) : supabase.from("hotels").select("id,name").eq("created_by", user.id),
-          isCompany ? Promise.resolve({ data: [] }) : supabase.from("adventure_places").select("id,name").eq("created_by", user.id)
+          localIsCompany ? Promise.resolve({ data: [] }) : supabase.from("hotels").select("id,name").eq("created_by", user.id),
+          localIsCompany ? Promise.resolve({ data: [] }) : supabase.from("adventure_places").select("id,name").eq("created_by", user.id)
         ]);
 
         if (cancelled) return;
