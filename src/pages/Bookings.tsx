@@ -67,14 +67,17 @@ const Bookings = () => {
         .range(fetchOffset, fetchOffset + ITEMS_PER_PAGE - 1);
       
       if (error) throw error;
-      if (fetchOffset === 0) {
-        setBookings(data || []);
-        bookingsCache.data = data;
-        cacheBookings(data || []);
-      } else {
-        setBookings(prev => [...prev, ...(data || [])]);
-        cacheBookings([...(fetchOffset === 0 ? [] : bookings), ...(data || [])]);
-      }
+        if (fetchOffset === 0) {
+          setBookings(data || []);
+          bookingsCache.data = data;
+          cacheBookings(data || []);
+        } else {
+          setBookings(prev => {
+            const nextBookings = [...prev, ...(data || [])];
+            cacheBookings(nextBookings);
+            return nextBookings;
+          });
+        }
       setHasMore((data || []).length >= ITEMS_PER_PAGE);
     } catch (e) { 
       console.error("Fetch error:", e); 
