@@ -126,29 +126,25 @@ const CompanyRegistration = () => {
         photoUrl = publicUrl;
       }
 
-      if (existingCompany) {
-        const updateData: any = {
+      const companyPayload: Record<string, any> = {
           company_name: formData.company_name.trim(),
           registration_number: formData.registration_number.trim(),
           phone_number: formData.phone_number.trim(),
           email: formData.email.trim(),
           country: formData.country,
-          verification_status: "pending",
         };
-        if (photoUrl) updateData.profile_photo_url = photoUrl;
-        const { error } = await supabase.from("companies").update(updateData).eq("id", existingCompany.id);
+        if (photoUrl) companyPayload.profile_photo_url = photoUrl;
+
+      if (existingCompany) {
+        // Only set verification_status on resubmission of rejected companies
+        if (existingCompany.verification_status === "rejected") {
+          companyPayload.verification_status = "pending";
+        }
+        const { error } = await supabase.from("companies").update(companyPayload).eq("id", existingCompany.id);
         if (error) throw error;
       } else {
-        const insertData: any = {
-          user_id: user.id,
-          company_name: formData.company_name.trim(),
-          registration_number: formData.registration_number.trim(),
-          phone_number: formData.phone_number.trim(),
-          email: formData.email.trim(),
-          country: formData.country,
-        };
-        if (photoUrl) insertData.profile_photo_url = photoUrl;
-        const { error } = await supabase.from("companies").insert(insertData);
+        companyPayload.user_id = user.id;
+        const { error } = await supabase.from("companies").insert(companyPayload as any);
         if (error) throw error;
       }
 

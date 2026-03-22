@@ -35,9 +35,15 @@ const CompanyBrowse = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [allCompanyNames, setAllCompanyNames] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     fetchCompanies(0, true);
+    // Fetch all names for suggestions
+    supabase.from("companies").select("company_name").eq("verification_status", "approved").order("company_name").then(({ data }) => {
+      setAllCompanyNames((data || []).map(c => c.company_name));
+    });
   }, []);
 
   const fetchCompanies = async (offset: number, reset = false) => {
@@ -68,9 +74,13 @@ const CompanyBrowse = () => {
     setLoadingMore(false);
   };
 
-  const handleSearch = () => {
+  const handleSearch = (value?: string) => {
+    const q = value !== undefined ? value : search;
+    setSearch(q);
     setPage(0);
-    fetchCompanies(0, true);
+    setShowSuggestions(false);
+    // Refetch with the search value
+    setTimeout(() => fetchCompanies(0, true), 0);
   };
 
   const loadMore = () => {
@@ -78,6 +88,11 @@ const CompanyBrowse = () => {
     setPage(nextPage);
     fetchCompanies(nextPage * PAGE_SIZE);
   };
+
+  // Suggestions filtered
+  const suggestions = search.trim().length >= 2
+    ? allCompanyNames.filter(n => n.toLowerCase().includes(search.toLowerCase())).slice(0, 5)
+    : [];
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -89,19 +104,37 @@ const CompanyBrowse = () => {
       </div>
 
       <div className="px-4 pt-4 max-w-5xl mx-auto">
-        {/* Search */}
-        <div className="flex gap-2 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search companies..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="pl-10 h-11 rounded-xl"
-            />
+        {/* Search with suggestions */}
+        <div className="relative mb-6">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search companies..."
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setShowSuggestions(true); }}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className="pl-10 h-11 rounded-xl"
+              />
+            </div>
+            <Button onClick={() => handleSearch()} className="h-11 rounded-xl px-6">Search</Button>
           </div>
-          <Button onClick={handleSearch} className="h-11 rounded-xl px-6">Search</Button>
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-lg z-10 overflow-hidden">
+              {suggestions.map((name, i) => (
+                <button
+                  key={i}
+                  className="w-full text-left px-4 py-3 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                  onMouseDown={() => handleSearch(name)}
+                >
+                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-foreground">{name}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {loading ? (

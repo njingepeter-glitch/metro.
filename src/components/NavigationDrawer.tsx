@@ -83,14 +83,6 @@ export const NavigationDrawer = ({ onClose }: NavigationDrawerProps) => {
         <Link to="/" onClick={onClose} className="flex items-center gap-2">
           <img src="/fulllogo.png" alt="Realtravo" className="h-7" />
         </Link>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={onClose}
-          className="text-xs font-medium text-muted-foreground hover:text-foreground"
-        >
-          Cancel
-        </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-6">

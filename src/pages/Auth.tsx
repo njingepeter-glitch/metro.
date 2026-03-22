@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
 import { SEOHead } from "@/components/SEOHead";
+import { Header } from "@/components/Header";
 import { Home, MapPin, Shield, Star } from "lucide-react";
 
 const Auth = () => {
@@ -22,7 +23,12 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col">
+      {/* Header visible on large screens */}
+      <div className="hidden lg:block">
+        <Header />
+      </div>
+      <div className="flex-1 flex flex-col lg:flex-row">
       <SEOHead
         title="Sign In or Sign Up | Realtravo"
         description="Create an account or sign in to Realtravo to book trips, save favorites, and manage your travel experiences."
@@ -149,6 +155,7 @@ const Auth = () => {
             © {new Date().getFullYear()} Realtravo. All rights reserved.
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
