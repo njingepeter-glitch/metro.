@@ -132,25 +132,9 @@ const BecomeHost = () => {
 
   const trackHostReferral = async (referrerId: string) => {
     try {
-      const { data: existingTracking } = await supabase
-        .from("referral_tracking")
-        .select("*")
-        .eq("referrer_id", referrerId)
-        .eq("referred_user_id", user?.id)
-        .eq("referral_type", "host")
-        .single();
-        
-      if (!existingTracking) {
-        await supabase.from("referral_tracking").insert({
-          referrer_id: referrerId,
-          referred_user_id: user?.id,
-          referral_type: "host",
-          item_id: "host_referral",
-          item_type: "host",
-          status: "pending"
-        });
-        await supabase.from("profiles").update({ referrer_id: referrerId }).eq("id", user?.id);
-      }
+      // Referral tracking insert requires service_role - skip client-side insert
+      // This will be handled server-side via edge function
+      await supabase.from("profiles").update({ referrer_id: referrerId }).eq("id", user?.id);
     } catch (error) {
       console.error(error);
     }
