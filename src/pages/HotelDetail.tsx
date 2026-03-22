@@ -237,9 +237,9 @@ const HotelDetail = () => {
         onBack={goBack}
       />
 
-      <div className="max-w-6xl mx-auto md:px-4 md:pt-3">
+      <div className="max-w-6xl mx-auto md:px-4 md:pt-16">
         {/* Mobile Carousel */}
-        <div className="relative w-full h-[45vh] bg-slate-900 overflow-hidden md:rounded-3xl md:hidden">
+        <div className="relative w-full h-[45vh] mt-14 md:mt-0 bg-slate-900 overflow-hidden md:rounded-3xl md:hidden">
           {/* No floating buttons on mobile - nav bar handles back/save */}
           <Carousel plugins={[Autoplay({ delay: 3500 })]} className="w-full h-full">
             <CarouselContent className="h-full ml-0">

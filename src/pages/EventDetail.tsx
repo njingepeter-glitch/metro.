@@ -182,8 +182,8 @@ const EventDetail = () => {
         onBack={goBack}
       />
 
-      <div className="max-w-6xl mx-auto md:px-4 md:pt-3">
-        <div className="relative w-full overflow-hidden h-[55vh] bg-slate-900 md:rounded-3xl md:hidden">
+      <div className="max-w-6xl mx-auto md:px-4 md:pt-16">
+        <div className="relative w-full overflow-hidden h-[55vh] mt-14 md:mt-0 bg-slate-900 md:rounded-3xl md:hidden">
           {/* No floating buttons on mobile - nav bar handles back/save */}
           <Carousel plugins={[Autoplay({ delay: 4000 })]} className="w-full h-full">
             <CarouselContent className="h-full ml-0">
