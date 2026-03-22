@@ -58,7 +58,7 @@ export const PageLayout = ({ children }: PageLayoutProps) => {
     pathname === "/" || pathname === "/contact" || pathname === "/about" || pathname.startsWith("/category/");
 
   const shouldHideMobileBar =
-    pathname === "/host-verification" || pathname.startsWith("/booking/");
+    pathname === "/host-verification";
 
   // Auth page renders its own header
   const isDetailPage =
