@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "configVersion": 1,
   "workspaces": {
-    "": {
+    "": { 
       "name": "vite_react_shadcn_ts",
       "dependencies": {
         "@capacitor/android": "^8.2.0",
