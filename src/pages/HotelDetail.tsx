@@ -192,7 +192,7 @@ const HotelDetail = () => {
     }
   };
 
-  if (loading) return <TealLoader />;
+  if (loading) return <DetailPageSkeleton />;
   if (!hotel) return null;
 
   const facilityImages = (Array.isArray(hotel.facilities) ? hotel.facilities : [])
