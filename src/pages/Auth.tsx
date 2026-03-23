@@ -87,11 +87,6 @@ const Auth = () => {
 
       {/* Right Panel - Auth Forms */}
       <div className="flex-1 flex flex-col min-h-screen bg-background relative overflow-hidden">
-        <img
-          src={brandPaletteImage}
-          alt="Brand palette accent"
-          className="pointer-events-none absolute -right-12 top-20 w-48 opacity-20 sm:w-56 lg:hidden"
-        />
         {/* Mobile top bar */}
         <div className="flex items-center justify-between p-4 lg:p-8 lg:pb-0">
           <img src="/fulllogo.png" alt="Realtravo" className="h-7 lg:hidden" />
