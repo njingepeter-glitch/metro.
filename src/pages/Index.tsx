@@ -97,11 +97,11 @@ ScrollSection.displayName = "ScrollSection";
 
 // ─── Category pill data ──────────────────────────────────────────────────────
 const CATEGORIES = [
-  { icon: Tent, title: "Adventures", path: "/category/campsite", color: "hsl(142, 70%, 35%)", bgClass: "bg-emerald-600", image: "/images/category-campsite.webp" },
-  { icon: Hotel, title: "Hotels", path: "/category/hotels", color: "hsl(220, 70%, 50%)", bgClass: "bg-blue-600", image: "/images/category-hotels.webp" },
-  { icon: Calendar, title: "Trips", path: "/category/trips", color: "hsl(25, 90%, 50%)", bgClass: "bg-orange-500", image: "/images/category-trips.webp" },
-  { icon: Compass, title: "Events", path: "/category/events", color: "hsl(340, 75%, 50%)", bgClass: "bg-rose-600", image: "/images/category-events.webp" },
-  { icon: Home, title: "Stays", path: "/category/accommodation", color: "hsl(270, 60%, 50%)", bgClass: "bg-purple-600", image: "/images/category-hotels.webp" },
+  { icon: Tent, title: "Adventures", path: "/category/campsite", color: "hsl(142, 70%, 35%)", bgClass: "bg-emerald-600" },
+  { icon: Hotel, title: "Hotels", path: "/category/hotels", color: "hsl(220, 70%, 50%)", bgClass: "bg-blue-600" },
+  { icon: Calendar, title: "Trips", path: "/category/trips", color: "hsl(25, 90%, 50%)", bgClass: "bg-orange-500" },
+  { icon: Compass, title: "Events", path: "/category/events", color: "hsl(340, 75%, 50%)", bgClass: "bg-rose-600" },
+  { icon: Home, title: "Stays", path: "/category/accommodation", color: "hsl(270, 60%, 50%)", bgClass: "bg-purple-600" },
 ];
 
 // ─── Quick navigation cards (above footer) ───────────────────────────────────
@@ -465,7 +465,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Category cards with images */}
+          {/* Category pills */}
           <div className="absolute bottom-3 left-0 right-0 z-10">
             <div className="container mx-auto px-4 md:px-6">
               <div className="grid grid-cols-5 gap-2 w-full">
@@ -473,13 +473,13 @@ const Index = () => {
                   <button
                     key={cat.title}
                     onClick={() => navigate(cat.path)}
-                    className="flex flex-col items-center gap-1 transition-all hover:scale-105 active:scale-95"
+                    className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border border-white/20 transition-all hover:scale-105 active:scale-95 shadow-lg backdrop-blur-sm"
+                    style={{ backgroundColor: cat.color }}
                   >
-                    <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg border border-white/20 relative">
-                      <img src={cat.image} alt={cat.title} className="w-full h-full object-cover" loading="lazy" />
-                      <div className="absolute inset-0 bg-black/20" />
+                    <div className="h-9 w-9 rounded-xl bg-white/20 flex items-center justify-center">
+                      <cat.icon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-[10px] font-bold text-white leading-tight text-center drop-shadow-md">{cat.title}</span>
+                    <span className="text-[10px] font-bold text-white leading-tight text-center">{cat.title}</span>
                   </button>
                 ))}
               </div>
