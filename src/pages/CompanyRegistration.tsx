@@ -119,7 +119,8 @@ const CompanyRegistration = () => {
     try {
       let photoUrl: string | null = null;
       if (photoFile) {
-        const fileName = `companies/${user.id}/${Date.now()}.${photoFile.name.split('.').pop()}`;
+        const fileExt = photoFile.name.split('.').pop() || "jpg";
+        const fileName = `${user.id}/companies/${Date.now()}.${fileExt}`;
         const { error: uploadError } = await supabase.storage.from("profile-photos").upload(fileName, photoFile, { upsert: true });
         if (uploadError) throw uploadError;
         const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(fileName);

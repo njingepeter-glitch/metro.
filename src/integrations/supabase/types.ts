@@ -1465,6 +1465,7 @@ export type Database = {
       cleanup_old_bookings: { Args: never; Returns: undefined }
       cleanup_old_notifications: { Args: never; Returns: undefined }
       generate_referral_id: { Args: never; Returns: string }
+      get_auth_uid: { Args: never; Returns: string }
       get_date_availability: {
         Args: { p_date: string; p_item_id: string; p_item_type: string }
         Returns: Json
