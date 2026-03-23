@@ -200,7 +200,7 @@ const Bookings = () => {
                               </Badge>
                             </div>
                             <p className="text-sm font-bold text-foreground truncate pr-4">
-                              {b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || 'Reservation'}
+                              {b.booking_details?.item_name || b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || 'Reservation'}
                             </p>
                             <p className="text-[9px] font-mono text-muted-foreground mt-1 uppercase">ID: {b.id.slice(0, 8)}</p>
                           </div>
@@ -220,19 +220,28 @@ const Bookings = () => {
                         */}
                         {expandedBookings[b.id] && (
                           <div className="border-t border-border/50 bg-muted/20 p-4 space-y-5">
+                            {/* Basic info */}
                             <div className="grid grid-cols-2 gap-4 text-[10px] font-bold uppercase">
                               <div>
                                 <p className="text-muted-foreground mb-1 tracking-widest">Guest</p>
                                 <p className="text-foreground">{b.guest_name || 'N/A'}</p>
                               </div>
                               <div>
-                                <p className="text-muted-foreground mb-1 tracking-widest">Date</p>
+                                <p className="text-muted-foreground mb-1 tracking-widest">Visit Date</p>
                                 <p className="text-foreground">
                                   {b.visit_date ? format(new Date(b.visit_date), 'dd MMM yyyy') : 'N/A'}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-muted-foreground mb-1 tracking-widest">Guests</p>
+                                <p className="text-muted-foreground mb-1 tracking-widest">Adults</p>
+                                <p className="text-foreground">{b.booking_details?.adults || b.booking_details?.num_adults || 0}</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground mb-1 tracking-widest">Children</p>
+                                <p className="text-foreground">{b.booking_details?.children || b.booking_details?.num_children || 0}</p>
+                              </div>
+                              <div>
+                                <p className="text-muted-foreground mb-1 tracking-widest">Slots</p>
                                 <p className="text-foreground">{b.slots_booked || 1}</p>
                               </div>
                               <div>
@@ -240,6 +249,50 @@ const Bookings = () => {
                                 <p className="text-emerald-600">Confirmed</p>
                               </div>
                             </div>
+
+                            {/* Activities */}
+                            {(() => {
+                              const activities = b.booking_details?.selectedActivities || b.booking_details?.activities || [];
+                              return activities.length > 0 ? (
+                                <div className="bg-accent/5 rounded-2xl p-3 space-y-2">
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-accent">Activities</p>
+                                  {activities.map((a: any, i: number) => (
+                                    <div key={i} className="flex justify-between items-center text-xs">
+                                      <span className="font-semibold text-foreground">{a.name || a}</span>
+                                      <span className="text-muted-foreground text-[10px]">
+                                        {a.numberOfPeople ? `${a.numberOfPeople} ${a.numberOfPeople === 1 ? 'person' : 'people'}` : ''}
+                                        {a.price ? ` · KES ${Number(a.price).toLocaleString()}` : ''}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : null;
+                            })()}
+
+                            {/* Facilities */}
+                            {(() => {
+                              const facilities = b.booking_details?.selectedFacilities || b.booking_details?.facilities || [];
+                              return facilities.length > 0 ? (
+                                <div className="bg-primary/5 rounded-2xl p-3 space-y-2">
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-primary">Facilities</p>
+                                  {facilities.map((f: any, i: number) => (
+                                    <div key={i} className="text-xs space-y-0.5">
+                                      <div className="flex justify-between items-center">
+                                        <span className="font-semibold text-foreground">{f.name || f}</span>
+                                        {f.price && <span className="text-muted-foreground text-[10px]">KES {Number(f.price).toLocaleString()}/day</span>}
+                                      </div>
+                                      {f.startDate && f.endDate && (
+                                        <p className="text-[10px] text-muted-foreground">
+                                          {format(new Date(f.startDate), 'dd MMM')} → {format(new Date(f.endDate), 'dd MMM yyyy')}
+                                          {' · '}
+                                          {Math.ceil((new Date(f.endDate).getTime() - new Date(f.startDate).getTime()) / (1000 * 60 * 60 * 24))} days
+                                        </p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : null;
+                            })()}
 
                             <div className="flex flex-wrap gap-2 pt-2">
                               {/* 
@@ -258,7 +311,7 @@ const Bookings = () => {
                                   guestName: b.guest_name || 'Guest',
                                   guestEmail: b.guest_email || '',
                                   guestPhone: b.guest_phone,
-                                  itemName: b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || b.booking_details?.item_name || 'Booking',
+                                  itemName: b.booking_details?.item_name || b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || 'Booking',
                                   bookingType: b.booking_type || 'booking',
                                   visitDate: b.visit_date || b.created_at,
                                   totalAmount: b.total_amount || 0,
