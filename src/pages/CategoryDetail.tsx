@@ -260,7 +260,7 @@ const CategoryDetail = () => {
         */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {loading ? (
-            <div className="col-span-full"><TealLoader text="Loading listings..." /></div>
+            <div className="col-span-full"><CategoryDetailSkeleton /></div>
           ) : (
             filteredItems.map(item => {
               const ratingData = ratings.get(item.id);
