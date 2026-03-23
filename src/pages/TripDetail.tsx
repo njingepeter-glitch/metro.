@@ -20,7 +20,7 @@ import { useBookingSubmit, BookingFormData } from "@/hooks/useBookingSubmit";
 import { useRealtimeItemAvailability } from "@/hooks/useRealtimeBookings";
 import { DetailNavBar } from "@/components/detail/DetailNavBar";
 import { DetailMapSection } from "@/components/detail/DetailMapSection";
-import { TealLoader } from "@/components/ui/teal-loader";
+import { DetailPageSkeleton } from "@/components/detail/DetailPageSkeleton";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { ImageGalleryModal } from "@/components/detail/ImageGalleryModal";
 import { Footer } from "@/components/Footer";
