@@ -458,7 +458,7 @@ const Index = () => {
                 <NavigationDrawer onClose={() => setIsDrawerOpen(false)} />
               </SheetContent>
             </Sheet>
-            <NotificationBell />
+            <NotificationBell forceDark />
           </div>
         </div>
       )}

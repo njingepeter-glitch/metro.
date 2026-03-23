@@ -54,7 +54,7 @@ const categorizeNotifications = (notifications: Notification[]) => {
   return Object.keys(groups).map(title => ({ title, notifications: groups[title] }));
 };
 
-export const NotificationBell = () => {
+export const NotificationBell = ({ forceDark = false }: { forceDark?: boolean }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,7 +74,7 @@ export const NotificationBell = () => {
     h-11 w-11 rounded-2xl flex items-center justify-center transition-all duration-200 
     active:scale-90 relative group overflow-visible
     bg-transparent text-white md:shadow-sm md:border md:border-slate-200
-    ${isIndexPage ? 'md:text-slate-800 md:bg-white/90 md:hover:bg-white' : 'md:text-slate-700 md:bg-slate-50 md:hover:bg-slate-100'}
+    ${forceDark ? 'text-foreground bg-transparent' : isIndexPage ? 'md:text-slate-800 md:bg-white/90 md:hover:bg-white' : 'md:text-slate-700 md:bg-slate-50 md:hover:bg-slate-100'}
   `;
 
   const getNotificationDeepLink = useCallback((notification: Notification): string | null => {
