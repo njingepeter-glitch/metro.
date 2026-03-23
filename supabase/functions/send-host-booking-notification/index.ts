@@ -186,7 +186,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const { data, error } = await resend.emails.send({
-      from: "Bookings <onboarding@resend.dev>",
+      from: "Realtravo Bookings <noreply@realtravo.com>",
       to: [host.email],
       subject: `New Paid Booking - ${safeItemName}`,
       html: emailHTML,

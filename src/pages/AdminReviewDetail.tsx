@@ -107,6 +107,22 @@ const AdminReviewDetail = () => {
       const { error } = await supabase.from(item.tableName).update(updateData).eq("id", id);
       if (error) throw error;
 
+      // Send email notification to the item creator
+      if (item.created_by) {
+        try {
+          await supabase.functions.invoke('send-item-status-email', {
+            body: {
+              userId: item.created_by,
+              itemName: item.name || item.location_name || 'Your listing',
+              itemType: item.tableName === 'trips' ? (item.type === 'event' ? 'event' : 'trip') : item.tableName === 'hotels' ? 'hotel' : 'adventure_place',
+              status: validatedStatus,
+            }
+          });
+        } catch (emailError) {
+          console.error('Failed to send item status email:', emailError);
+        }
+      }
+
       toast({ title: `Item ${status} successfully` });
       navigate("/admin");
     } catch (error) {
