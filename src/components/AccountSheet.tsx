@@ -94,22 +94,22 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
         {children}
       </SheetTrigger>
       
-       <SheetContent className="w-full sm:max-w-md p-0 pb-24 border-none bg-background flex flex-col [&>button]:hidden">
-        <div className="px-6 pt-5 pb-4 bg-background border-b border-border flex-shrink-0">
+       <SheetContent className="brand-shell w-full sm:max-w-md p-0 pb-24 border-none bg-background flex flex-col [&>button]:hidden">
+        <div className="px-6 pt-5 pb-4 bg-primary text-primary-foreground border-b border-border/60 flex-shrink-0">
           <SheetHeader>
             <div className="flex items-center justify-between">
-              <SheetTitle className="text-xl font-black uppercase tracking-tighter text-primary">
+              <SheetTitle className="text-xl font-black uppercase tracking-tighter text-primary-foreground">
                 My Account
               </SheetTitle>
-              <button onClick={() => setIsOpen(false)} className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+              <button onClick={() => setIsOpen(false)} className="text-xs font-semibold text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 Cancel
               </button>
             </div>
           </SheetHeader>
           
           {!loading && userName && (
-            <div className="flex items-center gap-3 mt-4 p-3 rounded-2xl border border-border bg-card">
-              <div className="h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center border border-primary/20 overflow-hidden">
+            <div className="flex items-center gap-3 mt-4 p-3 rounded-2xl border border-primary-foreground/10 bg-primary-light/70">
+              <div className="h-12 w-12 rounded-full brand-icon-wrap flex items-center justify-center border border-primary-foreground/10 overflow-hidden">
                 {userAvatar ? (
                   <img src={userAvatar} alt={userName} className="h-full w-full object-cover" referrerPolicy="no-referrer" />
                 ) : (
@@ -119,8 +119,8 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-foreground truncate">{userName}</p>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <p className="text-sm font-bold text-primary-foreground truncate">{userName}</p>
+                <p className="text-[10px] font-semibold text-primary-foreground/70 uppercase tracking-wider">
                   {userRole === "admin" ? "Administrator" : "Member"}
                 </p>
               </div>
@@ -144,25 +144,25 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
 
                 return (
                   <div key={idx} className="space-y-2">
-                    <h3 className="ml-2 text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+                    <h3 className="ml-2 text-[9px] font-black text-primary uppercase tracking-[0.2em]">
                       {section.section}
                     </h3>
-                    <div className="bg-card rounded-[20px] overflow-hidden shadow-sm border border-border divide-y divide-border/60">
+                    <div className="brand-panel rounded-[20px] overflow-hidden divide-y divide-border/60">
                       {visibleItems.map((item) => (
                         <button 
                           key={item.path} 
                           onClick={() => handleNavigate(item.path)} 
-                          className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-all active:scale-[0.98] group"
+                          className="w-full flex items-center justify-between px-4 py-3 hover:bg-accent/5 transition-all active:scale-[0.98] group"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="p-1.5 rounded-lg bg-muted group-hover:bg-primary transition-colors">
-                              <item.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary-foreground" />
+                            <div className="brand-icon-wrap p-1.5 rounded-lg group-hover:scale-105 transition-transform">
+                              <item.icon className="h-4 w-4" />
                             </div>
                             <span className="text-[11px] font-black uppercase tracking-tight text-foreground">
                               {item.label}
                             </span>
                           </div>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-accent transition-colors" />
                         </button>
                       ))}
                     </div>
@@ -172,17 +172,17 @@ export const AccountSheet = ({ children }: AccountSheetProps) => {
 
               <button 
                 onClick={handleLogout} 
-                className="w-full flex items-center justify-between px-4 py-3 bg-card rounded-[20px] border border-destructive/15 shadow-sm hover:bg-destructive/5 transition-all group"
+                className="w-full flex items-center justify-between px-4 py-3 bg-card rounded-[20px] border border-accent/15 shadow-sm hover:bg-accent/5 transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-lg bg-destructive/10 group-hover:bg-destructive transition-colors">
-                    <LogOut className="h-4 w-4 text-destructive group-hover:text-destructive-foreground" />
+                  <div className="p-1.5 rounded-lg bg-accent/10 group-hover:bg-accent transition-colors">
+                    <LogOut className="h-4 w-4 text-accent group-hover:text-accent-foreground" />
                   </div>
-                  <span className="text-[11px] font-black uppercase tracking-tight text-destructive">
+                  <span className="text-[11px] font-black uppercase tracking-tight text-accent">
                     Log Out
                   </span>
                 </div>
-                <ChevronRight className="h-4 w-4 text-destructive/40 group-hover:text-destructive" />
+                <ChevronRight className="h-4 w-4 text-accent/40 group-hover:text-accent" />
               </button>
             </div>
           )}
