@@ -120,6 +120,7 @@ const QUICK_NAV = [
 
 // ─── Main component ──────────────────────────────────────────────────────────
 const Index = () => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");

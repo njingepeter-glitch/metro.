@@ -323,13 +323,7 @@ const HotelDetail = () => {
         </div>
       </div>
 
-      <div className="md:hidden container px-4 mt-4 max-w-6xl mx-auto">
-        <QuickNavigationBar
-          hasFacilities={hotel.facilities?.length > 0}
-          hasActivities={hotel.activities?.length > 0}
-          hasContact={hotel.phone_numbers?.length > 0 || !!hotel.email}
-        />
-      </div>
+      {/* QuickNavigationBar removed on mobile per design */}
 
       <main className="container px-4 mt-6 relative z-30 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[1.8fr,1fr] gap-4">

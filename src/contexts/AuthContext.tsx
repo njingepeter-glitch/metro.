@@ -48,6 +48,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         setLoading(false);
 
+        // If user arrives via password recovery link, redirect to reset-password page
+        if (event === 'PASSWORD_RECOVERY') {
+          navigate('/reset-password');
+          return;
+        }
+
         // Auto-complete profile for Google OAuth users - skip CompleteProfile page entirely
         if (event === 'SIGNED_IN' && session?.user) {
           const isOAuth = session.user.app_metadata?.provider === 'google';
