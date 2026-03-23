@@ -12,6 +12,7 @@ import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { useOfflineBookings } from "@/hooks/useOfflineBookings";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { BookingsSkeleton } from "@/components/BookingsSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const bookingsCache = { data: null as any[] | null, timestamp: 0 };
 
