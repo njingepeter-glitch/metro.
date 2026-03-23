@@ -311,7 +311,7 @@ const Bookings = () => {
                                   guestName: b.guest_name || 'Guest',
                                   guestEmail: b.guest_email || '',
                                   guestPhone: b.guest_phone,
-                                  itemName: b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || b.booking_details?.item_name || 'Booking',
+                                  itemName: b.booking_details?.item_name || b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || 'Booking',
                                   bookingType: b.booking_type || 'booking',
                                   visitDate: b.visit_date || b.created_at,
                                   totalAmount: b.total_amount || 0,
