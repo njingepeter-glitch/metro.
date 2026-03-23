@@ -200,7 +200,7 @@ const Bookings = () => {
                               </Badge>
                             </div>
                             <p className="text-sm font-bold text-foreground truncate pr-4">
-                              {b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || 'Reservation'}
+                              {b.booking_details?.item_name || b.booking_details?.trip_name || b.booking_details?.hotel_name || b.booking_details?.place_name || 'Reservation'}
                             </p>
                             <p className="text-[9px] font-mono text-muted-foreground mt-1 uppercase">ID: {b.id.slice(0, 8)}</p>
                           </div>
