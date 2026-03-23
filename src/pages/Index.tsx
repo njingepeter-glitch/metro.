@@ -444,11 +444,6 @@ const Index = () => {
             />
           </picture>
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
-          <img
-            src={brandPaletteImage}
-            alt="Brand palette accent"
-            className="absolute right-[-8%] top-[12%] z-[1] w-[230px] max-w-[42vw] rotate-[-8deg] opacity-30 mix-blend-screen md:right-[6%] md:top-[10%] md:w-[320px]"
-          />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--accent)/0.22),transparent_26%),radial-gradient(circle_at_bottom_left,hsl(var(--popup-accent)/0.18),transparent_24%)]" />
 
           {/* Content - centered text + search */}
