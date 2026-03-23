@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import { Trash2, MapPin, ChevronRight, Loader2, Lock } from "lucide-react";
 import { createDetailPath } from "@/lib/slugUtils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SavedItemsSkeleton } from "@/components/SavedItemsSkeleton";
 import { Button } from "@/components/ui/button";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { useAuth } from "@/contexts/AuthContext";
