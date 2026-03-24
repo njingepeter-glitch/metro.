@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import PaystackPop from "@paystack/inline-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getReferralTrackingId } from "@/lib/referralUtils";
