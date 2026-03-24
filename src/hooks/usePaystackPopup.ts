@@ -87,7 +87,7 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
         onSuccess: async (transaction: any) => {
           console.log('Payment successful:', transaction);
           setPaymentStatus('success');
-          options.onVerifying?.();
+          optionsRef.current.onVerifying?.();
           // Verify payment on backend
           try {
             const { data: verifyData, error: verifyError } = await supabase.functions.invoke('paystack-verify', {
