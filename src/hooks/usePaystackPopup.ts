@@ -129,7 +129,7 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
           console.log('Payment cancelled');
           setPaymentStatus('idle');
           setIsLoading(false);
-          options.onClose?.();
+          optionsRef.current.onClose?.();
         },
       });
 
