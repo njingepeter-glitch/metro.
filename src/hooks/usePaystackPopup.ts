@@ -33,6 +33,9 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const popupRef = useRef<PaystackPop | null>(null);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const initiatePayment = useCallback(async (
     email: string,
