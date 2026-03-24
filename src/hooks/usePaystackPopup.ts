@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import PaystackPop from "@paystack/inline-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getReferralTrackingId } from "@/lib/referralUtils";
@@ -33,6 +33,9 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const popupRef = useRef<PaystackPop | null>(null);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const initiatePayment = useCallback(async (
     email: string,
@@ -74,14 +77,17 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
       sessionStorage.setItem('paystack_reference', reference);
       sessionStorage.setItem('paystack_booking_data', JSON.stringify(bookingDataWithReferral));
 
-      // Open Paystack popup
-      const popup = new PaystackPop();
+      // Reuse popup instance to prevent re-initialization
+      if (!popupRef.current) {
+        popupRef.current = new PaystackPop();
+      }
+      const popup = popupRef.current;
       
       popup.resumeTransaction(access_code, {
         onSuccess: async (transaction: any) => {
           console.log('Payment successful:', transaction);
           setPaymentStatus('success');
-          options.onVerifying?.();
+          optionsRef.current.onVerifying?.();
           // Verify payment on backend
           try {
             const { data: verifyData, error: verifyError } = await supabase.functions.invoke('paystack-verify', {
@@ -96,12 +102,12 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
             sessionStorage.removeItem('paystack_reference');
             sessionStorage.removeItem('paystack_booking_data');
 
-            options.onSuccess?.(transaction.reference, verifyData?.data);
+            optionsRef.current.onSuccess?.(transaction.reference, verifyData?.data);
           } catch (err) {
             console.error('Error verifying payment:', err);
             // Still consider it success since payment went through
             // Pass booking data with correct field names for PDF generation
-            options.onSuccess?.(transaction.reference, {
+            optionsRef.current.onSuccess?.(transaction.reference, {
               bookingId: transaction.reference,
               guestName: bookingDataWithReferral.guest_name,
               guestEmail: bookingDataWithReferral.guest_email,
@@ -123,7 +129,7 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
           console.log('Payment cancelled');
           setPaymentStatus('idle');
           setIsLoading(false);
-          options.onClose?.();
+          optionsRef.current.onClose?.();
         },
       });
 
@@ -132,9 +138,9 @@ export const usePaystackPopup = (options: PaystackPopupOptions = {}) => {
       setPaymentStatus('error');
       setErrorMessage(error.message);
       setIsLoading(false);
-      options.onError?.(error.message);
+      optionsRef.current.onError?.(error.message);
     }
-  }, [options]);
+  }, []);
 
   const resetPayment = useCallback(() => {
     setPaymentStatus('idle');

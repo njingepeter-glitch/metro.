@@ -106,7 +106,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     const isPaid = paymentStatus === 'paid' || paymentStatus === 'completed' || booking.payment_status === 'paid' || booking.payment_status === 'completed';
     const typeDisplay = safeBookingType.charAt(0).toUpperCase() + safeBookingType.slice(1);
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(bookingId)}`;
+    const qrData = JSON.stringify({ bookingId, visitDate: visitDate ? String(visitDate).split('T')[0] : '', email: recipientEmail });
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
 
     // Generate detailed breakdown HTML
     let detailsHTML = '';
@@ -116,27 +117,39 @@ const handler = async (req: Request): Promise<Response> => {
     if (bookingDetails) {
       const details = typeof bookingDetails === 'string' ? JSON.parse(bookingDetails) : bookingDetails;
       
+      // Item name from details
+      if (details.item_name) {
+        detailsHTML += `<p><strong>Item Booked:</strong> ${escapeHtml(details.item_name)}</p>`;
+      }
+      
       // Guest count
-      if (details.adults || details.children) {
-        detailsHTML += `<p><strong>Guests:</strong> ${Number(details.adults) || 0} Adults, ${Number(details.children) || 0} Children</p>`;
+      if (details.adults || details.num_adults || details.children || details.num_children) {
+        const adults = Number(details.adults || details.num_adults) || 0;
+        const children = Number(details.children || details.num_children) || 0;
+        detailsHTML += `<p><strong>Guests:</strong> ${adults} Adults${children > 0 ? `, ${children} Children` : ''}</p>`;
       }
       if (details.rooms) {
         detailsHTML += `<p><strong>Rooms:</strong> ${Number(details.rooms) || 0}</p>`;
       }
       
       // Facilities with date ranges
-      if (details.selectedFacilities && Array.isArray(details.selectedFacilities) && details.selectedFacilities.length > 0) {
+      const facilities = details.selectedFacilities || details.facilities;
+      if (facilities && Array.isArray(facilities) && facilities.length > 0) {
         facilitiesHTML = `
           <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
             <h3 style="color: #008080; font-size: 14px; margin-bottom: 10px; text-transform: uppercase;">Facilities Booked</h3>
             <ul style="list-style: none; padding: 0; margin: 0;">
-              ${details.selectedFacilities.map((f: any) => {
+              ${facilities.map((f: any) => {
                 const name = escapeHtml(typeof f === 'string' ? f : f.name || '');
                 const dateRange = f.startDate && f.endDate 
-                  ? ` <span style="color: #666;">(${formatDate(f.startDate)} - ${formatDate(f.endDate)})</span>`
+                  ? ` <span style="color: #666;">(${formatDate(f.startDate)} → ${formatDate(f.endDate)})</span>`
                   : '';
+                const days = f.startDate && f.endDate 
+                  ? Math.ceil((new Date(f.endDate).getTime() - new Date(f.startDate).getTime()) / (1000 * 60 * 60 * 24))
+                  : 0;
+                const daysText = days > 0 ? ` <span style="color: #008080; font-weight: bold;">(${days} ${days === 1 ? 'day' : 'days'})</span>` : '';
                 const price = f.price ? ` - KES ${Number(f.price).toLocaleString()}/day` : '';
-                return name ? `<li style="padding: 8px 0; border-bottom: 1px dashed #ddd;"><strong>${name}</strong>${dateRange}${price}</li>` : '';
+                return name ? `<li style="padding: 8px 0; border-bottom: 1px dashed #ddd;"><strong>${name}</strong>${dateRange}${daysText}${price}</li>` : '';
               }).filter(Boolean).join('')}
             </ul>
           </div>
@@ -144,12 +157,13 @@ const handler = async (req: Request): Promise<Response> => {
       }
       
       // Activities with number of people
-      if (details.selectedActivities && Array.isArray(details.selectedActivities) && details.selectedActivities.length > 0) {
+      const activities = details.selectedActivities || details.activities;
+      if (activities && Array.isArray(activities) && activities.length > 0) {
         activitiesHTML = `
           <div style="background: #fff5f0; padding: 15px; border-radius: 8px; margin: 15px 0;">
             <h3 style="color: #FF7F50; font-size: 14px; margin-bottom: 10px; text-transform: uppercase;">Activities</h3>
             <ul style="list-style: none; padding: 0; margin: 0;">
-              ${details.selectedActivities.map((a: any) => {
+              ${activities.map((a: any) => {
                 const name = escapeHtml(typeof a === 'string' ? a : a.name || '');
                 const people = a.numberOfPeople ? ` <span style="color: #666;">(${a.numberOfPeople} ${a.numberOfPeople === 1 ? 'person' : 'people'})</span>` : '';
                 const price = a.price ? ` - KES ${Number(a.price).toLocaleString()}/person` : '';
@@ -207,18 +221,18 @@ const handler = async (req: Request): Promise<Response> => {
               ${facilitiesHTML}
               ${activitiesHTML}
 
-              ${isPaid ? `
               <div class="qr-code">
                 <h3>Your Booking QR Code</h3>
                 <p>Show this at the venue for quick check-in:</p>
                 <img src="${qrCodeUrl}" alt="Booking QR Code" width="200" height="200" />
               </div>
-              ` : `
+
+              ${!isPaid ? `
               <div class="detail-box">
                 <h2>Payment Instructions</h2>
-                <p>To confirm your booking, please complete the payment process. You should receive an M-Pesa prompt on your phone.</p>
+                <p>To confirm your booking, please complete the payment process.</p>
               </div>
-              `}
+              ` : ''}
 
               <p>Thank you for choosing us!</p>
             </div>

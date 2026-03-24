@@ -261,9 +261,9 @@ const TripDetail = () => {
         </div>
       </div>
 
-      <main className="container px-4 max-w-6xl mx-auto mt-6 relative z-50">
-        <div className="grid lg:grid-cols-[1.7fr,1fr] gap-6">
-          <div className="space-y-6">
+      <main className="container px-4 max-w-6xl mx-auto mt-3 relative z-50">
+        <div className="grid lg:grid-cols-[1.7fr,1fr] gap-3 lg:gap-6">
+          <div className="space-y-3 lg:space-y-6">
             <div className="bg-white rounded-[28px] p-7 shadow-sm border border-slate-100">
               <h2 className="text-xl font-black uppercase tracking-tight mb-4" style={{ color: COLORS.TEAL }}>About this Trip</h2>
               {event.description ? (
@@ -331,7 +331,7 @@ const TripDetail = () => {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-3 lg:space-y-6">
             <div className="bg-white rounded-[32px] p-8 shadow-2xl border border-slate-100 lg:sticky lg:top-24">
               <div className="flex justify-between items-end mb-8">
                 <div>

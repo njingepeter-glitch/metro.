@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { getUserId } from "@/lib/sessionManager";
 import { useGeolocation, calculateDistance } from "@/hooks/useGeolocation";
+import { useIpLocation } from "@/hooks/useIpLocation";
 import { ListingSkeleton } from "@/components/ui/listing-skeleton";
 import { useSavedItems } from "@/hooks/useSavedItems";
 import { getCachedHomePageData, setCachedHomePageData } from "@/hooks/useHomePageCache";
@@ -131,6 +132,7 @@ const Index = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const { position, loading: locationLoading, permissionDenied, requestLocation, forceRequestLocation } = useGeolocation();
+  const { location: ipLocation } = useIpLocation();
   const [showLocationDialog, setShowLocationDialog] = useState(false);
   const { cardLimit, isLargeScreen } = useResponsiveLimit();
 
@@ -197,31 +199,63 @@ const Index = () => {
   }, []);
 
   // ─── Data fetching ─────────────────────────────────────────────────────────
+  // Use IP location country to filter results when available
+  const ipCountry = ipLocation?.country || null;
+
   const fetchScrollableRows = useCallback(async (limit: number) => {
     setLoadingScrollable(true);
     const fetchLimit = Math.max(limit * 3, 30);
     try {
-      const [tripsData, hotelsData, campsitesData, eventsData] = await Promise.all([
-        supabase.from("trips").select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description")
-          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").order("date", { ascending: true }).limit(fetchLimit),
-        supabase.from("hotels").select("id,name,location,place,country,image_url,activities,latitude,longitude,created_at,establishment_type,description")
-          .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit),
-        supabase.from("adventure_places").select("id,name,location,place,country,image_url,entry_fee,activities,latitude,longitude,created_at,description")
-          .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit),
-        supabase.from("trips").select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description")
-          .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "event").order("date", { ascending: true }).limit(fetchLimit),
-      ]);
-      setScrollableRows({
-        trips: tripsData.data || [], hotels: hotelsData.data || [],
-        attractions: [], campsites: campsitesData.data || [],
-        events: eventsData.data || [], accommodations: [],
-      });
+      let tripsQuery = supabase.from("trips").select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description")
+        .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").order("date", { ascending: true }).limit(fetchLimit);
+      let hotelsQuery = supabase.from("hotels").select("id,name,location,place,country,image_url,activities,latitude,longitude,created_at,establishment_type,description")
+        .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit);
+      let campsitesQuery = supabase.from("adventure_places").select("id,name,location,place,country,image_url,entry_fee,activities,latitude,longitude,created_at,description")
+        .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit);
+      let eventsQuery = supabase.from("trips").select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description")
+        .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "event").order("date", { ascending: true }).limit(fetchLimit);
+
+      // Filter by detected country if available
+      if (ipCountry) {
+        tripsQuery = tripsQuery.ilike("country", `%${ipCountry}%`);
+        hotelsQuery = hotelsQuery.ilike("country", `%${ipCountry}%`);
+        campsitesQuery = campsitesQuery.ilike("country", `%${ipCountry}%`);
+        eventsQuery = eventsQuery.ilike("country", `%${ipCountry}%`);
+      }
+
+      const [tripsData, hotelsData, campsitesData, eventsData] = await Promise.all([tripsQuery, hotelsQuery, campsitesQuery, eventsQuery]);
+      
+      // If country filter returned too few results, fetch without filter
+      const totalResults = (tripsData.data?.length || 0) + (hotelsData.data?.length || 0) + (campsitesData.data?.length || 0) + (eventsData.data?.length || 0);
+      if (ipCountry && totalResults < 4) {
+        const [t2, h2, c2, e2] = await Promise.all([
+          supabase.from("trips").select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description")
+            .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "trip").order("date", { ascending: true }).limit(fetchLimit),
+          supabase.from("hotels").select("id,name,location,place,country,image_url,activities,latitude,longitude,created_at,establishment_type,description")
+            .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit),
+          supabase.from("adventure_places").select("id,name,location,place,country,image_url,entry_fee,activities,latitude,longitude,created_at,description")
+            .eq("approval_status", "approved").eq("is_hidden", false).limit(fetchLimit),
+          supabase.from("trips").select("id,name,location,place,country,image_url,date,is_custom_date,is_flexible_date,available_tickets,activities,type,created_at,price,price_child,description")
+            .eq("approval_status", "approved").eq("is_hidden", false).eq("type", "event").order("date", { ascending: true }).limit(fetchLimit),
+        ]);
+        setScrollableRows({
+          trips: t2.data || [], hotels: h2.data || [],
+          attractions: [], campsites: c2.data || [],
+          events: e2.data || [], accommodations: [],
+        });
+      } else {
+        setScrollableRows({
+          trips: tripsData.data || [], hotels: hotelsData.data || [],
+          attractions: [], campsites: campsitesData.data || [],
+          events: eventsData.data || [], accommodations: [],
+        });
+      }
     } catch (error) {
       console.error("Error fetching scrollable rows:", error);
     } finally {
       setLoadingScrollable(false);
     }
-  }, []);
+  }, [ipCountry]);
 
   const fetchNearbyPlacesAndHotels = useCallback(async () => {
     setLoadingNearby(true);

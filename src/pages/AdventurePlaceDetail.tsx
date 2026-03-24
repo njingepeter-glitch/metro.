@@ -319,9 +319,9 @@ const AdventurePlaceDetail = () => {
 
       {/* QuickNavigationBar removed on mobile per design */}
 
-      <main className="container px-4 mt-6 relative z-30 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.8fr,1fr] gap-4">
-          <div className="space-y-4">
+      <main className="container px-4 mt-3 relative z-30 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.8fr,1fr] gap-2 lg:gap-4">
+          <div className="space-y-2 lg:space-y-4">
             <section className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
               <h2 className="text-[11px] font-black uppercase tracking-widest mb-3 text-slate-900">About This Property</h2>
               {place.description ? (
